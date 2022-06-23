@@ -1,0 +1,24 @@
+{
+  "name": "codingchallenges",
+  "version": "1.0.0",
+  "description": "Coding Solutions",
+  "main": "array-diff.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fdvmoreira/CodingChallenges.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fdvmoreira/CodingChallenges/issues"
+  },
+  "homepage": "https://github.com/fdvmoreira/CodingChallenges#readme",
+  "dependencies": {
+    "chai": "^4.3.6",
+    "jest": "^28.1.1"
+  }
+}
