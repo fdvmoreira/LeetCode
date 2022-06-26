@@ -1,4 +1,4 @@
-const sumDigPow = require('../sum-of-digits');
+const sumDigPow = require('./../sum-of-digits');
 const Assert = require('chai').assert;
 
 
