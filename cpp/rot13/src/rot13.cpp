@@ -9,7 +9,7 @@
 // IF the character IS an alphabet
 //     convert to lowercase if uppercase
 //     convert it to ascii value
-//     use the formula x = (x+n) MOD 26
+//     use the formula x = (x+n-97) MOD 26+97 lower case
 //     ?? get the character at that position in the array
 //     convert it to character again
 //     save it to the new string array

@@ -10,7 +10,8 @@
  * @param message
  * @return
  */
-extern std::string rot13(const std::string &message);
+std::string rot13(const std::string &message);
+
 
 
 #endif //CHALLENGES_ROT13_H
