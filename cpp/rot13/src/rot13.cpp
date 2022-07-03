@@ -1,27 +1,7 @@
-//
-// Created by moreira on 29/06/22.
-//
-
-#include <iostream>
-#include "rot13.h"
 #include <string>
-
 #include <array>
-#include <numeric>
-#include <algorithm>
+#include "rot13.h"
 
-/**
- *
- * @param message
- * @return
- */
-std::string rot13(const std::string &message);
-
-int main([[maybe_unused]]int argc, [[maybe_unused]]char **argv){
-
-    std::cout<< rot13("hello world!")<<std::endl;
-    return 0;
-}
 // SOURCE: https://www.codewars.com/kata/530e15517bc88ac656000716/train/javascript
 // **************** Pseudocode ****************
 // ********************************************
@@ -36,12 +16,31 @@ int main([[maybe_unused]]int argc, [[maybe_unused]]char **argv){
 //
 //
 
-
+/**
+ *
+ * @param message
+ * @return
+ */
 std::string rot13(const std::string &message){
-    std::string alphabet;
-    for (char c = 'a';c <= 'z';c++){
-        alphabet.append(std::to_string(c));
+    std::string rot13;
+
+    for (auto s : message) {
+        if (isalpha(s)){
+            char c = toascii(s);
+            bool upper_case = std::isupper(s);
+
+            if(upper_case)
+                c = std::tolower(s);
+
+            char ciphered_character = static_cast<char>((c + 13 - 97) % 26 + 97);
+
+            ciphered_character = upper_case? static_cast<char >(std::toupper(ciphered_character)):ciphered_character;
+
+            rot13.append(1,ciphered_character);
+            continue;
+        }
+        rot13.append(1,s);
     }
 
-    return alphabet;
+    return rot13;
 }

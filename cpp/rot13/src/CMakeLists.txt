@@ -1,1 +1,1 @@
-add_executable(rot13 rot13.cpp rot13.h)
+add_executable(rot13 main.cpp rot13.cpp rot13.h )
