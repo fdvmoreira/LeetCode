@@ -13,8 +13,6 @@ add_library(rot13lib STATIC ./../src/rot13.cpp ./../src/rot13.h)
 
 add_executable(rot13_test rot13_test.cpp)
 
-message(NOTICE "MESSAGE: ${CMAKE_SOURCE_DIR}")
-
 target_link_libraries(rot13_test PRIVATE GTest::GTest rot13lib)
 
-add_test(rot13_gtest rot13_test)
+add_test(rot13_gtest rot13_tes)
