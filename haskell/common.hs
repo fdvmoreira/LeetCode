@@ -1,5 +1,7 @@
 module Common
   ( map',
+    filter',
+    quicksort',
   )
 where
 
