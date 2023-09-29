@@ -32,3 +32,10 @@ chain' x
 --
 numLongChains :: Int
 numLongChains = length $ Common.filter' (> 15) [length (chain' x) | x <- [1 .. 100]]
+
+--
+-- Alternative implementation
+-- numLongChains = length $ Common.filter' (\x -> length x > 15) (Common.map' chain' [1 .. 100])
+--
+--
+--
