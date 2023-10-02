@@ -1,4 +1,4 @@
-module Challenges (largestDivisibleBy3829, oddSquareUnder10k, chain') where
+module Challenges (largestDivisibleBy3829, oddSquareUnder10k, chain', sum') where
 
 import Common qualified
 
@@ -37,5 +37,11 @@ numLongChains = length $ Common.filter' (> 15) [length (chain' x) | x <- [1 .. 1
 -- Alternative implementation
 -- numLongChains = length $ Common.filter' (\x -> length x > 15) (Common.map' chain' [1 .. 100])
 --
+--
+--
+sum' :: (Num a) => [a] -> a
+-- sum' xs = foldl (\acc x -> acc + x) 0 xs
+sum' xs = foldl (+) 0 xs
+
 --
 --
