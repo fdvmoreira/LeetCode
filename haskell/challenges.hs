@@ -1,6 +1,7 @@
-module Challenges (largestDivisibleBy3829, oddSquareUnder10k, chain', sum') where
+module Challenges (elem', oddSquareUnder10k, chain', sum') where
 
 import Common qualified
+import Distribution.Simple.Setup (falseArg)
 
 --
 -- Find the largest number under 100,000 that's divisible by 3829.
@@ -41,7 +42,14 @@ numLongChains = length $ Common.filter' (> 15) [length (chain' x) | x <- [1 .. 1
 --
 sum' :: (Num a) => [a] -> a
 -- sum' xs = foldl (\acc x -> acc + x) 0 xs
-sum' xs = foldl (+) 0 xs
+-- sum' xs = foldl (+) 0 xs
+sum' = foldl (+) 0
+
+--
+--
+elem' :: (Eq a) => a -> [a] -> Bool
+-- elem' y ys = foldl (\acc x -> if x == y then True else acc) False ys
+elem' y ys = foldl (\acc x -> (x == y) || acc) False ys
 
 --
 --
