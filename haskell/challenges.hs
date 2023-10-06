@@ -1,4 +1,4 @@
-module Challenges (elem', oddSquareUnder10k, chain', sum') where
+module Challenges (elem', oddSquareUnder10k, chain', sum', mapWithFoldr) where
 
 import Common qualified
 import Distribution.Simple.Setup (falseArg)
@@ -51,5 +51,12 @@ elem' :: (Eq a) => a -> [a] -> Bool
 -- elem' y ys = foldl (\acc x -> if x == y then True else acc) False ys
 elem' y ys = foldl (\acc x -> (x == y) || acc) False ys
 
+--
+--
+--
+mapWithFoldr :: (a -> b) -> [a] -> [b]
+mapWithFoldr f xs = foldr (\x acc -> f x : acc) [] xs
+
+--
 --
 --
