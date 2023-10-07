@@ -1,4 +1,4 @@
-module Challenges (elem', oddSquareUnder10k, chain', sum', mapWithFoldr) where
+module Challenges (elem', oddSquareUnder10k, chain', sum', mapWithFoldr, sqrtSum ) where
 
 import Common qualified
 import Distribution.Simple.Setup (falseArg)
@@ -59,4 +59,6 @@ mapWithFoldr f xs = foldr (\x acc -> f x : acc) [] xs
 
 --
 --
---
+-- How many elements does it take for the sum of the roots of all natural numbers to exceed 1000?
+sqrtSum :: Int
+sqrtSum = (length $ takeWhile (<1000) $ scanl1 (\acc x->acc + (sqrt x)) [1..]) + 1
