@@ -62,3 +62,8 @@ mapWithFoldr f xs = foldr (\x acc -> f x : acc) [] xs
 -- How many elements does it take for the sum of the roots of all natural numbers to exceed 1000?
 sqrtSum :: Int
 sqrtSum = (length $ takeWhile (<1000) $ scanl1 (\acc x->acc + (sqrt x)) [1..]) + 1
+
+-- Usinf function composition to solve previous problem
+--
+oddSquareSum :: Integer  
+oddSquareSum = sum . takeWhile (<10000) . filter odd . map (^2) $ [1..]  
