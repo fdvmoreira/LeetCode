@@ -1,7 +1,8 @@
-module Challenges (elem', oddSquareUnder10k, chain', sum', mapWithFoldr, sqrtSum ) where
+module Challenges (elem', oddSquareUnder10k, chain', sum', mapWithFoldr, sqrtSum, numOfUniques ) where
 
 import Common qualified
 import Distribution.Simple.Setup (falseArg)
+import Data.List (nub)
 
 --
 -- Find the largest number under 100,000 that's divisible by 3829.
@@ -67,3 +68,12 @@ sqrtSum = (length $ takeWhile (<1000) $ scanl1 (\acc x->acc + (sqrt x)) [1..]) +
 --
 oddSquareSum :: Integer  
 oddSquareSum = sum . takeWhile (<10000) . filter odd . map (^2) $ [1..]  
+
+--
+-- return number of unique numbers in a list
+--
+numOfUniques :: Eq a => [a] -> Int
+numOfUniques = length . nub
+
+--
+--
