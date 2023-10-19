@@ -1,7 +1,6 @@
-module Challenges (elem', oddSquareUnder10k, chain', sum', mapWithFoldr, sqrtSum, numOfUniques, firstTimeOver1k ) where
+module Challenges (elem', oddSquareUnder10k, chain', sum', mapWithFoldr, sqrtSum, numOfUniques, firstTimeOver1k) where
 
-import Common qualified
-import Distribution.Simple.Setup (falseArg)
+import Common
 import Data.List (nub)
 
 --
@@ -62,23 +61,25 @@ mapWithFoldr f xs = foldr (\x acc -> f x : acc) [] xs
 --
 -- How many elements does it take for the sum of the roots of all natural numbers to exceed 1000?
 sqrtSum :: Int
-sqrtSum = (length $ takeWhile (<1000) $ scanl1 (\acc x->acc + (sqrt x)) [1..]) + 1
+sqrtSum = length (takeWhile (< 1000) $ scanl1 (\acc x -> acc + sqrt x) [1 ..]) + 1
 
 -- Usinf function composition to solve previous problem
 --
-oddSquareSum :: Integer  
-oddSquareSum = sum . takeWhile (<10000) . filter odd . map (^2) $ [1..]  
+oddSquareSum :: Integer
+oddSquareSum = sum . takeWhile (< 10000) . filter odd . map (^ 2) $ [1 ..]
 
 --
 -- return number of unique numbers in a list
 --
-numOfUniques :: Eq a => [a] -> Int
+numOfUniques :: (Eq a) => [a] -> Int
 numOfUniques = length . nub
 
 --
 --
 -- We're given a list that represents the value of a stock by date. The list is made of tuples whose first component is the stock value, the second is the year, the third is the month and the fourth is the date. We want to know when the stock value first exceeded one thousand dollars!
--- 
-firstTimeOver1k :: [(Float,Int,Int,Int)] -> (Float,Int,Int,Int)
-firstTimeOver1k xs = head $ dropWhile (\(stock,_,_,_)-> stock < 1000) xs
+--
+firstTimeOver1k :: [(Float, Int, Int, Int)] -> (Float, Int, Int, Int)
+firstTimeOver1k xs = head $ dropWhile (\(stock, _, _, _) -> stock < 1000) xs
 
+--
+--
