@@ -1,7 +1,8 @@
-module Challenges (elem', oddSquareUnder10k, chain', sum', mapWithFoldr, sqrtSum, numOfUniques, firstTimeOver1k) where
+module Challenges (elem', oddSquareUnder10k, chain', sum', mapWithFoldr, sqrtSum, numOfUniques, firstTimeOver1k, countChar) where
 
 import Common
-import Data.List (nub)
+import Data.List (group, nub, sort)
+import Distribution.Compat.CharParsing (CharParsing (string))
 
 --
 -- Find the largest number under 100,000 that's divisible by 3829.
@@ -81,5 +82,13 @@ numOfUniques = length . nub
 firstTimeOver1k :: [(Float, Int, Int, Int)] -> (Float, Int, Int, Int)
 firstTimeOver1k xs = head $ dropWhile (\(stock, _, _, _) -> stock < 1000) xs
 
+--
+--
+-- Count how many time each chareacter appears in a string
+countChar :: (Ord a) => [a] -> [(a, Int)]
+countChar [] = []
+countChar (x : xs) = map (\lst@(y : ys) -> (y, length lst)) . group . sort $ xs
+
+--
 --
 --
