@@ -6,7 +6,7 @@ pub mod day1 {
         u32,
     };
 
-    fn load_file_content(path: &str) -> Result<Vec<String>, Error> {
+    pub fn load_file_content(path: &str) -> Result<Vec<String>, Error> {
         let file = File::open(path)?;
         let reader = BufReader::new(file);
 
@@ -32,15 +32,37 @@ pub mod day1 {
                 .map(|v| char::from_u32(v as u32))
                 .collect();
 
-            let (first, last) = (digits.first().unwrap(), digits.last().unwrap());
+            if !digits.is_empty() {
+                let (first, last) = (digits.first().unwrap(), digits.last().unwrap());
 
-            let num = format!("{}{}", first.unwrap(), last.unwrap())
-                .parse::<u32>()
-                .unwrap();
+                let num = format!("{}{}", first.unwrap(), last.unwrap())
+                    .parse::<u32>()
+                    .unwrap();
 
-            acc + num
+                return acc + num;
+            }
+            acc
         });
 
         Some(sum)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use crate::day1::{load_file_content, trubuchet};
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_load_file_content() {
+        assert!(!load_file_content("data/day1.txt").unwrap().is_empty())
+    }
+
+    #[test]
+    fn test_trubuchet() {
+        assert_eq!(trubuchet("data/test/day1_01.txt"), Some(131u32));
+        assert_eq!(trubuchet("data/test/day1_02.txt"), Some(22u32));
+        assert_eq!(trubuchet("data/test/day1_03.txt"), Some(22u32));
     }
 }
