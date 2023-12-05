@@ -26,18 +26,12 @@ pub fn trubuchet_one(path: &str) -> Option<u32> {
     }
 
     let sum = lines.iter().fold(0, |acc, line| {
-        let digits: Vec<Option<char>> = line
-            .bytes()
-            .filter(|b| b.is_ascii_digit())
-            .map(|v| char::from_u32(v as u32))
-            .collect();
+        let digits: Vec<char> = line.chars().filter(|b| b.is_ascii_digit()).collect();
 
         if !digits.is_empty() {
             let (first, last) = (digits.first().unwrap(), digits.last().unwrap());
 
-            let num = format!("{}{}", first.unwrap(), last.unwrap())
-                .parse::<u32>()
-                .unwrap();
+            let num = format!("{}{}", first, last).parse::<u32>().unwrap();
 
             return acc + num;
         }
@@ -49,7 +43,7 @@ pub fn trubuchet_one(path: &str) -> Option<u32> {
 
 // part two
 pub fn trubuchet_two(path: &str) -> Option<u32> {
-    let mut lines = load_file_content(path).unwrap();
+    let mut lines = load_file_content(path).ok()?;
 
     let digit_names: HashMap<&str, u32> = HashMap::from([
         ("zero", 0),
@@ -68,40 +62,20 @@ pub fn trubuchet_two(path: &str) -> Option<u32> {
         return None;
     }
 
-    // replace the words with the number
-    lines.iter_mut().for_each(|line| {
-        let mut line_copy = line.clone();
+    // replace the words with numbers
+    let modified_lines: Vec<String> = lines
+        .iter()
+        .map(|line| replace_word_with_digit(line, &digit_names))
+        .collect();
+    // });
 
-        for ele in digit_names.keys() {
-            while line_copy.contains(ele) {
-                line_copy.replace_range(
-                    line_copy.find(ele).unwrap()..line_copy.find(ele).unwrap() + ele.len(),
-                    digit_names
-                        .get_key_value(ele)
-                        .unwrap()
-                        .1
-                        .to_string()
-                        .as_str(),
-                ); //TODO - mutability problems
-            }
-        }
-
-        line.replace_range(.., line_copy.as_str());
-    });
-
-    let sum = lines.iter().fold(0, |acc, line| {
-        let digits: Vec<Option<char>> = line
-            .bytes()
-            .filter(|b| b.is_ascii_digit())
-            .map(|v| char::from_u32(v as u32))
-            .collect();
+    let sum = modified_lines.iter().fold(0, |acc, line| {
+        let digits: Vec<char> = line.chars().filter(|b| b.is_ascii_digit()).collect();
 
         if !digits.is_empty() {
             let (first, last) = (digits.first().unwrap(), digits.last().unwrap());
 
-            let num = format!("{}{}", first.unwrap(), last.unwrap())
-                .parse::<u32>()
-                .unwrap();
+            let num = format!("{}{}", first, last).parse::<u32>().unwrap();
 
             return acc + num;
         }
@@ -111,10 +85,30 @@ pub fn trubuchet_two(path: &str) -> Option<u32> {
     Some(sum)
 }
 
+// REVIEW: use for loops instead of functional style
+pub fn replace_word_with_digit(string: &str, vec: &HashMap<&str, u32>) -> String {
+    let mut string = String::from(string);
+    for key in vec.keys() {
+        while string.contains(key) {
+            let ki = string.find(key).unwrap_or_default();
+            string.replace_range(
+                ki..ki + key.len(),
+                vec.get(key).unwrap().to_owned().to_string().as_str(),
+            );
+            println!("{string}");
+        }
+        // println!("{string}");
+    }
+
+    string
+}
+
 #[cfg(test)]
 mod tests {
 
-    use super::{load_file_content, trubuchet_one, trubuchet_two};
+    use std::collections::HashMap;
+
+    use super::{load_file_content, replace_word_with_digit, trubuchet_one, trubuchet_two};
     use googletest::prelude::*;
     use pretty_assertions::assert_eq;
 
@@ -126,6 +120,36 @@ mod tests {
     #[googletest::test]
     fn should_load_content_of_file() {
         expect_that!(load_file_content("data/day1.txt").unwrap(), not(empty()));
+    }
+
+    #[googletest::test]
+    fn should_conver_words_to_digits() {
+        let digits: HashMap<&str, u32> = HashMap::from([
+            ("zero", 0),
+            ("one", 1),
+            ("two", 2),
+            ("three", 3),
+            ("four", 4),
+            ("five", 5),
+            ("six", 6),
+            ("seven", 7),
+            ("eight", 8),
+            ("nine", 9),
+        ]);
+
+        let output = String::from("1223455667899");
+        expect_that!(
+            replace_word_with_digit(
+                "onetwotwothreefourfivefivesixsixseveneightninenine",
+                &digits
+            ),
+            eq(output)
+        );
+        let output2 = String::from("3944jclspd152rp");
+        expect_that!(
+            replace_word_with_digit("3nine44jclspd152rp", &digits),
+            eq(output2)
+        );
     }
 
     #[test]
