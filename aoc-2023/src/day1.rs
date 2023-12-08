@@ -43,7 +43,7 @@ pub fn trubuchet_one(path: &str) -> Option<u32> {
 
 // part two
 pub fn trubuchet_two(path: &str) -> Option<u32> {
-    let mut lines = load_file_content(path).ok()?;
+    let lines = load_file_content(path).ok()?;
 
     let digit_names: HashMap<&str, u32> = HashMap::from([
         ("zero", 0),
@@ -95,7 +95,7 @@ pub fn replace_word_with_digit(string: &str, vec: &HashMap<&str, u32>) -> String
                 ki..ki + key.len(),
                 vec.get(key).unwrap().to_owned().to_string().as_str(),
             );
-            println!("{string}");
+            // println!("{string}");
         }
         // println!("{string}");
     }
