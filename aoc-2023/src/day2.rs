@@ -26,7 +26,7 @@
 // Determine which games would have been possible if the bag had been loaded with only 12 red cubes, 13 green cubes, and 14 blue cubes. What is the sum of the IDs of those games?
 // ---
 
-use std::io::Error;
+use std::{collections::HashMap, io::Error};
 
 pub mod utils {
     use std::{
@@ -48,12 +48,14 @@ pub mod utils {
     }
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Game {
     id: u32,
     records: Record,
 }
 
-struct Record {
+#[derive(Debug, PartialEq)]
+pub struct Record {
     reds: Vec<u32>,
     greens: Vec<u32>,
     blues: Vec<u32>,
@@ -80,7 +82,46 @@ pub fn get_possible_games_id_sum(games: Vec<Game>) -> Result<u32, Error> {
 }
 
 pub fn parse_game_log(log: Vec<String>) -> Result<Vec<Game>, std::io::Error> {
-    todo!()
+    if log.is_empty() {
+        panic!("log is empty")
+    }
+
+    let mut games: Vec<Game> = Vec::new();
+
+    for game in log.iter() {
+        let red: Vec<u32> = Vec::new();
+        let green: Vec<u32> = Vec::new();
+        let blue: Vec<u32> = Vec::new();
+        let mut map: HashMap<&str, Vec<u32>> =
+            HashMap::from([("red", red), ("green", green), ("blue", blue)]);
+
+        let (id, record) = game.split_once(':').expect("failed extracting id");
+        let id = id.split_whitespace().last();
+
+        let rounds: Vec<&str> = record.split(';').collect();
+
+        for round in rounds.iter() {
+            let cubes: Vec<&str> = round.split(',').collect();
+
+            for cube in cubes.iter() {
+                let [num, color] = cube.split_ascii_whitespace().collect::<Vec<&str>>()[..] else {
+                    todo!()
+                };
+                map.get_mut(color).unwrap().push(num.parse().unwrap());
+            }
+        }
+
+        games.push(Game {
+            id: id.unwrap().parse().unwrap(),
+            records: Record {
+                reds: map.get("red").unwrap().to_vec(),
+                greens: map.get("green").unwrap().to_vec(),
+                blues: map.get("blue").unwrap().to_vec(),
+            },
+        });
+    }
+
+    Ok(games)
 }
 
 #[cfg(test)]
@@ -89,8 +130,8 @@ mod tests {
     use super::utils::load_file_content;
     use super::*;
     use googletest::{
-        assert_that,
-        matchers::{eq, gt, len},
+        assert_that, fail,
+        matchers::{eq, err, gt, len},
         verify_that, Result,
     };
 
@@ -178,5 +219,43 @@ mod tests {
         let result = get_possible_games_id_sum(Vec::new()).unwrap();
         let _ = verify_that!(result, eq(0));
         Ok(())
+    }
+
+    #[test]
+    fn test_parse_game_log_valid() {
+        let log = vec![
+            "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green".to_string(),
+            "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue".to_string(),
+        ];
+
+        let expected_result = vec![
+            Game {
+                id: 1,
+                records: Record {
+                    reds: vec![4, 1],
+                    greens: vec![2, 2],
+                    blues: vec![3, 6],
+                },
+            },
+            Game {
+                id: 2,
+                records: Record {
+                    reds: vec![1],
+                    greens: vec![2, 3, 1],
+                    blues: vec![1, 4, 1],
+                },
+            },
+        ];
+
+        assert_that!(parse_game_log(log).unwrap(), eq(expected_result));
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_parse_game_log_empty_log() -> () {
+        let log: Vec<String> = vec![];
+        let _result = parse_game_log(log);
+
+        ()
     }
 }
