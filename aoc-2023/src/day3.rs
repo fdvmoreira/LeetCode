@@ -33,16 +33,59 @@
 
 // ditermine part number
 // if surrounding values are diff from dot(.) and another number
-//
+
+pub fn sum_part_numbers(nums: &[u32]) -> Result<u32, std::io::ErrorKind> {
+    if nums.is_empty() {
+        return Err(std::io::ErrorKind::InvalidInput);
+    }
+
+    let sum: u32 = nums.iter().sum::<u32>();
+
+    Ok(sum)
+}
 
 pub mod utils {}
 
 #[cfg(test)]
 mod tests {
+
+    use super::*;
     use googletest::{assert_that, matchers::eq};
 
     #[test]
-    fn test_it_works() {
-        assert_that!(1, eq(1));
+    fn test_empty_array() {
+        let nums: Vec<u32> = vec![];
+
+        assert_that!(
+            sum_part_numbers(&nums),
+            eq(Err(std::io::ErrorKind::InvalidInput))
+        );
+    }
+
+    #[test]
+    fn test_single_element_array() {
+        let nums: Vec<u32> = vec![1];
+
+        assert!(sum_part_numbers(&nums).is_ok());
+        let sum = sum_part_numbers(&nums).unwrap();
+        assert_that!(sum, eq(1));
+    }
+
+    #[test]
+    fn test_array_with_unique_elements() {
+        let nums: Vec<u32> = vec![1, 2, 3, 4];
+
+        assert!(sum_part_numbers(&nums).is_ok());
+        let sum = sum_part_numbers(&nums).unwrap();
+        assert_that!(sum, eq(10));
+    }
+
+    #[test]
+    fn test_array_with_duplicate_elements() {
+        let nums: Vec<u32> = vec![1, 1, 2, 2, 3, 3, 4];
+
+        assert!(sum_part_numbers(&nums).is_ok());
+        let sum = sum_part_numbers(&nums).unwrap();
+        assert_that!(sum, eq(16));
     }
 }
