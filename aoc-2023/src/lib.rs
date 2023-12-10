@@ -24,9 +24,7 @@ pub mod utils {
 
 #[cfg(test)]
 mod tests {
-    use googletest::assert_that;
-    use googletest::matcher::{Matcher, MatcherResult};
-    use googletest::matchers::{eq, err, len};
+    use googletest::assert_pred;
 
     use crate::utils::load_file_content;
     use std::fs::File;
@@ -61,7 +59,7 @@ mod tests {
 
     #[test]
     fn test_load_file_content_failure() {
-        let output = load_file_content("yayayay");
-        // assert_that!(output, eq(Err("Not such file or directory")));
+        let actual = load_file_content("yayayay");
+        assert_pred!(actual.is_err());
     }
 }
