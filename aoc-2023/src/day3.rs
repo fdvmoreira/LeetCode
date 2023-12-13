@@ -34,12 +34,75 @@
 // ditermine part number
 // if surrounding values are diff from dot(.) and another number
 
-pub fn sum_part_numbers(nums: &[u32]) -> Result<u32, std::io::ErrorKind> {
-    if nums.is_empty() {
+use std::{char, collections::HashSet, str::FromStr, usize};
+
+pub fn is_part_number(chars: &[char]) -> Result<bool, std::io::ErrorKind> {
+    if chars.is_empty() {
+        return Ok(false);
+    }
+
+    let nums: HashSet<char> =
+        HashSet::from(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.']);
+
+    Ok(chars.iter().any(|c| (!nums.contains(c))).to_owned())
+}
+
+pub fn get_part_numbers(data: &[&str]) -> Result<Vec<u32>, std::io::ErrorKind> {
+    if data.is_empty() {
         return Err(std::io::ErrorKind::InvalidInput);
     }
 
-    let sum: u32 = nums.iter().sum::<u32>();
+    let matrix: Vec<Vec<char>> = data
+        .into_iter()
+        .map(|v| v.chars().collect::<Vec<char>>())
+        .collect();
+
+    let mut part_numbers: Vec<u32> = Vec::new();
+
+    for (ridx, row) in matrix.iter().enumerate() {
+        for mut cidx in 0..row.len() {
+            let mut is_curr_val_num = (matrix[ridx][cidx]).is_digit(10);
+
+            if is_curr_val_num {
+                let start_idx = cidx;
+                let mut end_idx = cidx;
+                let mut current_num = String::new();
+
+                while is_curr_val_num {
+                    current_num.push(matrix[ridx][cidx]);
+                    cidx += 1;
+                    is_curr_val_num = (matrix[ridx][cidx]).is_digit(10);
+                    end_idx = cidx;
+                }
+
+                let up = matrix[ridx - 1].get(start_idx - 1..=end_idx);
+                let down = matrix[ridx + 1].get(start_idx - 1..=end_idx);
+                let back = matrix[ridx].get(start_idx - 1..start_idx - 1);
+                let front = matrix[ridx].get(end_idx + 1..end_idx + 1);
+
+                // if let Some(_) = is_part_number(
+                //     &[up.into(), down.into(), back.into(), front.into()][..]
+                //         .iter_mut()
+                //         .flatten()
+                //         .collect(),
+                // )
+                // .ok()
+                // {
+                //     part_numbers.push(current_num.parse::<u32>().unwrap_or(0));
+                // }
+            }
+        }
+    }
+
+    Ok(part_numbers)
+}
+
+pub fn sum_part_numbers(part_numbers: &[u32]) -> Result<u32, std::io::ErrorKind> {
+    if part_numbers.is_empty() {
+        return Err(std::io::ErrorKind::InvalidInput);
+    }
+
+    let sum: u32 = part_numbers.iter().sum::<u32>();
 
     Ok(sum)
 }
@@ -87,5 +150,29 @@ mod tests {
         assert!(sum_part_numbers(&nums).is_ok());
         let sum = sum_part_numbers(&nums).unwrap();
         assert_that!(sum, eq(16));
+    }
+
+    #[test]
+    fn test_is_part_number_valid() {
+        // Valid part number: contains only digits and dot
+        let input = &['1', '2', '3', '.', '*', '5'];
+        let result = is_part_number(input).unwrap();
+        assert!(result);
+    }
+
+    #[test]
+    fn test_is_part_number_invalid() {
+        // Invalid part number: contains a character other than digit or dot
+        let input = &['1', '2', '9', '4', '5'];
+        let result = is_part_number(input).unwrap();
+        assert!(!result);
+    }
+
+    #[test]
+    fn test_is_part_number_empty() {
+        // Empty input should be considered invalid
+        let input: &[char] = &[];
+        let result = is_part_number(input).unwrap();
+        assert!(!result);
     }
 }
