@@ -47,13 +47,87 @@ pub fn is_part_number(chars: &[char]) -> Result<bool, std::io::ErrorKind> {
     Ok(chars.iter().any(|c| (!nums.contains(c))).to_owned())
 }
 
+pub fn get_adjecent_characters(
+    matrix: Vec<Vec<char>>,
+    num_pos: (usize, usize),
+    num_len: usize,
+) -> Result<Vec<char>, std::io::ErrorKind> {
+    let mut result: Vec<char> = Vec::new();
+    let (row, col) = num_pos;
+    let mut start_idx = col;
+    let mut end_idx = col + num_len;
+
+    if (start_idx as isize - 1) == -1 {
+        start_idx = 0;
+    }
+
+    if start_idx > 0 {
+        start_idx -= 1;
+    }
+
+    let row_len = matrix.get(0).map(|row| row.len()).unwrap();
+
+    if end_idx >= row_len {
+        end_idx = row_len - 1;
+    }
+
+    let mut top: Vec<char> = vec![];
+    if (row as isize - 1) != -1 {
+        top = matrix
+            .get(row - 1)
+            .and_then(|row| row.get(start_idx..=end_idx))
+            .unwrap_or(&[])
+            .to_owned();
+    }
+
+    let mut down: Vec<char> = vec![];
+    if row.lt(&matrix.len().sub(2)) {
+        down = matrix
+            .get(row + 1)
+            .and_then(|row| row.get(start_idx..=end_idx))
+            .unwrap_or(&[])
+            .to_owned();
+    }
+
+    let mut left: Vec<char> = vec![];
+    if start_idx < col {
+        left = matrix
+            .get(row)
+            .and_then(|row| row.get(start_idx..=start_idx))
+            .unwrap_or(&[])
+            .to_owned();
+    }
+
+    let mut right: Vec<char> = vec![];
+    if end_idx == col + num_len {
+        right = matrix
+            .get(row)
+            .and_then(|row| row.get(end_idx..=end_idx))
+            .unwrap_or(&[])
+            .to_owned();
+    }
+
+    result.append(
+        &mut [
+            top,   //top
+            down,  //down
+            left,  //left
+            right, //right
+        ]
+        .as_mut()
+        .concat(),
+    );
+
+    Ok(result)
+}
+
 pub fn get_part_numbers(data: &[&str]) -> Result<Vec<u32>, std::io::ErrorKind> {
     if data.is_empty() {
         return Err(std::io::ErrorKind::InvalidInput);
     }
 
     let matrix: Vec<Vec<char>> = data
-        .into_iter()
+        .iter()
         .map(|v| v.chars().collect::<Vec<char>>())
         .collect();
 
@@ -61,7 +135,7 @@ pub fn get_part_numbers(data: &[&str]) -> Result<Vec<u32>, std::io::ErrorKind> {
 
     for (ridx, row) in matrix.iter().enumerate() {
         for mut cidx in 0..row.len() {
-            let mut is_curr_val_num = (matrix[ridx][cidx]).is_digit(10);
+            let mut is_curr_val_num = (matrix[ridx][cidx]).is_ascii_digit();
 
             if is_curr_val_num {
                 let start_idx = cidx;
@@ -196,6 +270,18 @@ mod tests {
             result,
             eq(vec!['.', '.', '*', '.', '.', '.', '.', '.', '.', '.'])
         );
+        let result = get_adjecent_characters(matrix.clone(), (6, 2), 3).unwrap();
+        assert_that!(
+            result,
+            eq(vec![
+                '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'
+            ])
+        );
+        let result = get_adjecent_characters(matrix.clone(), (4, 0), 3).unwrap();
+        assert_that!(
+            result,
+            eq(vec!['.', '.', '.', '.', '.', '.', '.', '.', '*'])
+        );
     }
 
     #[test]
@@ -215,6 +301,11 @@ mod tests {
 
         let result = get_adjecent_characters(matrix.clone(), (0, 0), 3).unwrap();
         assert_that!(result, eq(vec!['.', '.', '.', '*', '.',]));
+        let result = get_adjecent_characters(matrix.clone(), (2, 2), 2).unwrap();
+        assert_that!(
+            result,
+            eq(vec!['.', '.', '*', '.', '.', '.', '.', '.', '.', '.'])
+        );
     }
 
     #[test]
@@ -230,10 +321,15 @@ mod tests {
             vec!['.', '.', '5', '9', '2', '.', '.', '.', '.', '.'],
             vec!['.', '.', '.', '.', '.', '.', '.', '7', '5', '5'],
             vec!['.', '.', '.', '$', '.', '*', '.', '.', '.', '.'],
-            vec!['.', '3', '6', '4', '.', '6', '7', '8', '.', '.'],
+            vec!['.', '3', '6', '9', '.', '6', '7', '8', '.', '.'],
         ];
 
         let result = get_adjecent_characters(matrix.clone(), (10, 5), 3).unwrap();
         assert_that!(result, eq(vec!['.', '*', '.', '.', '.', '.', '.']));
+        let result = get_adjecent_characters(matrix.clone(), (8, 7), 3).unwrap();
+        assert_that!(
+            result,
+            eq(vec!['.', '.', '.', '.', '.', '.', '.', '.', '.'])
+        );
     }
 }
