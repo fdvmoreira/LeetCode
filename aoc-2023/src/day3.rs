@@ -34,7 +34,7 @@
 // ditermine part number
 // if surrounding values are diff from dot(.) and another number
 
-use std::{char, collections::HashSet, str::FromStr, usize};
+use std::{char, collections::HashSet, ops::Sub, usize};
 
 pub fn is_part_number(chars: &[char]) -> Result<bool, std::io::ErrorKind> {
     if chars.is_empty() {
@@ -44,7 +44,7 @@ pub fn is_part_number(chars: &[char]) -> Result<bool, std::io::ErrorKind> {
     let nums: HashSet<char> =
         HashSet::from(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.']);
 
-    Ok(chars.iter().any(|c| (!nums.contains(c))).to_owned())
+    Ok(chars.iter().any(|&c| (!nums.contains(&c))).to_owned())
 }
 
 pub fn get_adjecent_characters(
@@ -134,7 +134,8 @@ pub fn get_part_numbers(data: &[&str]) -> Result<Vec<u32>, std::io::ErrorKind> {
     let mut part_numbers: Vec<u32> = Vec::new();
 
     for (ridx, row) in matrix.iter().enumerate() {
-        for mut cidx in 0..row.len() {
+        let mut cidx = 0;
+        while cidx < row.len() - 1 {
             let mut is_curr_val_num = (matrix[ridx][cidx]).is_ascii_digit();
 
             if is_curr_val_num {
@@ -142,29 +143,31 @@ pub fn get_part_numbers(data: &[&str]) -> Result<Vec<u32>, std::io::ErrorKind> {
                 let mut end_idx = cidx;
                 let mut current_num = String::new();
 
-                while is_curr_val_num {
+                while is_curr_val_num && cidx < row.len() {
                     current_num.push(matrix[ridx][cidx]);
                     cidx += 1;
-                    is_curr_val_num = (matrix[ridx][cidx]).is_digit(10);
-                    end_idx = cidx;
+                    if cidx < row.len() {
+                        is_curr_val_num = (matrix[ridx][cidx]).is_ascii_digit();
+                        end_idx = cidx;
+                    }
                 }
 
-                let up = matrix[ridx - 1].get(start_idx - 1..=end_idx);
-                let down = matrix[ridx + 1].get(start_idx - 1..=end_idx);
-                let back = matrix[ridx].get(start_idx - 1..start_idx - 1);
-                let front = matrix[ridx].get(end_idx + 1..end_idx + 1);
-
-                // if let Some(_) = is_part_number(
-                //     &[up.into(), down.into(), back.into(), front.into()][..]
-                //         .iter_mut()
-                //         .flatten()
-                //         .collect(),
-                // )
-                // .ok()
-                // {
-                //     part_numbers.push(current_num.parse::<u32>().unwrap_or(0));
-                // }
+                if is_part_number(
+                    &get_adjecent_characters(
+                        matrix.to_owned(),
+                        (ridx, start_idx),
+                        end_idx - start_idx,
+                    )
+                    .ok()
+                    .unwrap(),
+                )
+                .ok()
+                .unwrap()
+                {
+                    part_numbers.push(current_num.parse::<u32>().unwrap_or(0));
+                }
             }
+            cidx += 1;
         }
     }
 
@@ -330,6 +333,27 @@ mod tests {
         assert_that!(
             result,
             eq(vec!['.', '.', '.', '.', '.', '.', '.', '.', '.'])
+        );
+    }
+
+    #[test]
+    fn test_get_part_numbers() {
+        let data = [
+            "467..114..",
+            "...*......",
+            "..35..633.",
+            "......#...",
+            "617*......",
+            ".....+.58.",
+            "..592.....",
+            "......755.",
+            "...$.*....",
+            ".664.598..",
+        ];
+        let result = get_part_numbers(&data);
+        assert_that!(
+            result.unwrap(),
+            eq(vec![467, 35, 633, 617, 592, 755, 664, 598])
         );
     }
 }
