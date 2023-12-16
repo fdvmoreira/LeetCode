@@ -85,7 +85,10 @@ pub fn calculate_total_points(data: &[&str]) -> Result<u32, std::io::ErrorKind> 
 
 #[cfg(test)]
 pub mod tests {
+
     use googletest::{assert_that, matchers::eq};
+
+    use crate::utils::load_file_content;
 
     use super::*;
 
@@ -109,5 +112,18 @@ pub mod tests {
         let card = "Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11";
         let result = get_card_points(card).unwrap();
         assert_that!(result, eq(0));
+    }
+
+    #[test]
+    fn test_calculate_total_points() {
+        let data = load_file_content("data/test/day4.txt").unwrap();
+        let result = calculate_total_points(
+            data.iter()
+                .map(|line| line.as_str())
+                .collect::<Vec<&str>>()
+                .as_slice(),
+        )
+        .unwrap();
+        assert_that!(result, eq(13))
     }
 }
