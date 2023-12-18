@@ -95,18 +95,43 @@
 //
 //
 
+use std::u32;
+
+pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
+    let lowest_location = 0u32;
+    let [seeds, seed_to_soil, soil_to_fertilizer, fertilizer_to_water, water_to_light, light_to_temperature, temperature_to_humidity, humidity_to_location] =
+        data.split(|line| line.is_empty())
+            .into_iter()
+            .collect::<Vec<_>>()[..]
+    else {
+        todo!()
+    };
+
+    Ok(lowest_location)
+}
+
 pub mod utils {
     pub fn parse_file() {}
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use googletest::{assert_pred, assert_that, prelude::eq, test, Result};
 
-    #[googletest::test]
-    fn test_it_works() -> Result<()> {
-        assert_pred!(2 > 1);
-        Ok(())
+    use crate::utils::load_file_content;
+
+    use super::*;
+    use googletest::{assert_pred, assert_that, prelude::eq, test, verify_pred, Result};
+
+    #[test]
+    fn test_get_lowest_location() {
+        let data = load_file_content("data/test/day5.txt").ok().unwrap();
+        let result = get_lowest_location(
+            data.iter()
+                .map(|line| line.as_str())
+                .collect::<Vec<&str>>()
+                .as_slice(),
+        )
+        .unwrap();
+        assert_that!(result, eq(35));
     }
 }
