@@ -97,6 +97,25 @@
 
 use std::u32;
 
+fn parse_seeds(seeds: &[&str]) -> Option<Vec<u32>> {
+    if seeds.is_empty() {
+        return None;
+    }
+
+    let seeds: Vec<u32> = seeds
+        .last()
+        .unwrap()
+        .split(':')
+        .last()
+        .unwrap()
+        .split_ascii_whitespace()
+        .into_iter()
+        .map(|v| v.parse::<u32>().unwrap())
+        .collect::<Vec<u32>>();
+
+    Some(seeds)
+}
+
 pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
     let lowest_location = 0u32;
     let [seeds, seed_to_soil, soil_to_fertilizer, fertilizer_to_water, water_to_light, light_to_temperature, temperature_to_humidity, humidity_to_location] =
@@ -106,6 +125,9 @@ pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
     else {
         todo!()
     };
+
+    // TODO: parse the data above
+    let seeds: Vec<u32> = parse_seeds(seeds).unwrap();
 
     Ok(lowest_location)
 }
@@ -120,7 +142,11 @@ mod tests {
     use crate::utils::load_file_content;
 
     use super::*;
-    use googletest::{assert_pred, assert_that, prelude::eq, test, verify_pred, Result};
+    use googletest::{
+        assert_that,
+        matchers::{eq, none, some},
+        test,
+    };
 
     #[test]
     fn test_get_lowest_location() {
@@ -133,5 +159,15 @@ mod tests {
         )
         .unwrap();
         assert_that!(result, eq(35));
+    }
+
+    #[test]
+    fn test_parse_seeds() {
+        let input = [];
+        let result = parse_seeds(&input);
+        assert_that!(result, none());
+        let input = ["seeds: 79 14 55 13"];
+        let result = parse_seeds(&input);
+        assert_that!(result, some(eq(vec![79, 14, 55, 13])));
     }
 }
