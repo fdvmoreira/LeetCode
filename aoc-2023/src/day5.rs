@@ -143,9 +143,9 @@ mod tests {
 
     use super::*;
     use googletest::{
-        assert_that,
+        assert_pred, assert_that,
         matchers::{eq, none, some},
-        test,
+        test, verify_pred,
     };
 
     #[test]
@@ -161,13 +161,14 @@ mod tests {
         assert_that!(result, eq(35));
     }
 
-    #[test]
-    fn test_parse_seeds() {
+    #[googletest::test]
+    fn test_parse_seeds() -> googletest::Result<()> {
         let input = [];
         let result = parse_seeds(&input);
-        assert_that!(result, none());
+        assert_pred!(result.is_none());
         let input = ["seeds: 79 14 55 13"];
         let result = parse_seeds(&input);
         assert_that!(result, some(eq(vec![79, 14, 55, 13])));
+        Ok(())
     }
 }
