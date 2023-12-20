@@ -109,7 +109,6 @@ fn parse_seeds(seeds: &[&str]) -> Option<Vec<u32>> {
         .last()
         .unwrap()
         .split_ascii_whitespace()
-        .into_iter()
         .map(|v| v.parse::<u32>().unwrap())
         .collect::<Vec<u32>>();
 
@@ -123,7 +122,7 @@ fn map_src_to_dst(input: &[&str]) -> Option<HashMap<u32, u32>> {
 
     let mut output: HashMap<u32, u32> = HashMap::new();
 
-    let _ = input
+    input
         .iter()
         .skip(1)
         .map(|v| v.split_ascii_whitespace())
@@ -142,16 +141,12 @@ fn map_src_to_dst(input: &[&str]) -> Option<HashMap<u32, u32>> {
 }
 
 pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
-    let lowest_location = 0u32;
     let [seeds, seed_to_soil, soil_to_fertilizer, fertilizer_to_water, water_to_light, light_to_temperature, temperature_to_humidity, humidity_to_location] =
-        data.split(|line| line.is_empty())
-            .into_iter()
-            .collect::<Vec<_>>()[..]
+        data.split(|line| line.is_empty()).collect::<Vec<_>>()[..]
     else {
         todo!()
     };
 
-    // TODO: parse the data above
     let seeds: Vec<u32> = parse_seeds(seeds).unwrap();
     let seed_to_soil: HashMap<u32, u32> = map_src_to_dst(seed_to_soil).unwrap();
     let soil_to_fertilizer: HashMap<u32, u32> = map_src_to_dst(soil_to_fertilizer).unwrap();
@@ -162,9 +157,18 @@ pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
         map_src_to_dst(temperature_to_humidity).unwrap();
     let humidity_to_location: HashMap<u32, u32> = map_src_to_dst(humidity_to_location).unwrap();
 
-    println!("- MAP {:?}", seed_to_soil);
+    let lowest_location = seeds
+        .into_iter()
+        .map(|k| seed_to_soil.get(&k).map_or_else(|| k, |v| *v))
+        .map(|k| soil_to_fertilizer.get(&k).map_or_else(|| k, |v| *v))
+        .map(|k| fertilizer_to_water.get(&k).map_or_else(|| k, |v| *v))
+        .map(|k| water_to_light.get(&k).map_or_else(|| k, |v| *v))
+        .map(|k| light_to_temperature.get(&k).map_or_else(|| k, |v| *v))
+        .map(|k| temperature_to_humidity.get(&k).map_or_else(|| k, |v| *v))
+        .map(|k| humidity_to_location.get(&k).map_or_else(|| k, |v| *v))
+        .min();
 
-    Ok(lowest_location)
+    Ok(lowest_location.unwrap())
 }
 
 pub mod utils {
