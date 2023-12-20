@@ -95,7 +95,7 @@
 //
 //
 
-use std::u32;
+use std::{collections::HashMap, u32};
 
 fn parse_seeds(seeds: &[&str]) -> Option<Vec<u32>> {
     if seeds.is_empty() {
@@ -116,6 +116,31 @@ fn parse_seeds(seeds: &[&str]) -> Option<Vec<u32>> {
     Some(seeds)
 }
 
+fn map_src_to_dst(input: &[&str]) -> Option<HashMap<u32, u32>> {
+    if input.is_empty() {
+        return None;
+    }
+
+    let mut output: HashMap<u32, u32> = HashMap::new();
+
+    let _ = input
+        .iter()
+        .skip(1)
+        .map(|v| v.split_ascii_whitespace())
+        .map(|v| v.map(|d| d.parse::<u32>().unwrap()).collect::<Vec<u32>>())
+        .for_each(|vec| {
+            let [dst, src, len] = vec.as_slice() else {
+                todo!()
+            };
+
+            for i in 0..*len {
+                output.insert(*src + i, dst + i);
+            }
+        });
+
+    Some(output)
+}
+
 pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
     let lowest_location = 0u32;
     let [seeds, seed_to_soil, soil_to_fertilizer, fertilizer_to_water, water_to_light, light_to_temperature, temperature_to_humidity, humidity_to_location] =
@@ -128,6 +153,16 @@ pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
 
     // TODO: parse the data above
     let seeds: Vec<u32> = parse_seeds(seeds).unwrap();
+    let seed_to_soil: HashMap<u32, u32> = map_src_to_dst(seed_to_soil).unwrap();
+    let soil_to_fertilizer: HashMap<u32, u32> = map_src_to_dst(soil_to_fertilizer).unwrap();
+    let fertilizer_to_water: HashMap<u32, u32> = map_src_to_dst(fertilizer_to_water).unwrap();
+    let water_to_light: HashMap<u32, u32> = map_src_to_dst(water_to_light).unwrap();
+    let light_to_temperature: HashMap<u32, u32> = map_src_to_dst(light_to_temperature).unwrap();
+    let temperature_to_humidity: HashMap<u32, u32> =
+        map_src_to_dst(temperature_to_humidity).unwrap();
+    let humidity_to_location: HashMap<u32, u32> = map_src_to_dst(humidity_to_location).unwrap();
+
+    println!("- MAP {:?}", seed_to_soil);
 
     Ok(lowest_location)
 }
@@ -144,8 +179,8 @@ mod tests {
     use super::*;
     use googletest::{
         assert_pred, assert_that,
-        matchers::{eq, none, some},
-        test, verify_pred,
+        matchers::{eq, some},
+        test,
     };
 
     #[test]
@@ -170,5 +205,18 @@ mod tests {
         let result = parse_seeds(&input);
         assert_that!(result, some(eq(vec![79, 14, 55, 13])));
         Ok(())
+    }
+
+    #[googletest::test]
+    fn test_map_src_to_dst() {
+        let input = ["seed-to-soil map:", "50 98 2", "52 50 48"];
+        let result = map_src_to_dst(&input).unwrap();
+        assert_that!(result.get(&99), some(eq(&51u32)));
+        assert_that!(result.get(&95), some(eq(&97u32)));
+        assert_that!(result.get(&50), some(eq(&52u32)));
+        assert_that!(result.get(&90), some(eq(&92u32)));
+        let input = [];
+        let result = map_src_to_dst(&input);
+        assert_pred!(result.is_none());
     }
 }
