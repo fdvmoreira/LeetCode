@@ -1,4 +1,4 @@
-use aoc_2023::day5::get_lowest_location;
+use aoc_2023::day5_part_two::get_lowest_location;
 use aoc_2023::utils::load_file_content;
 
 fn main() {
