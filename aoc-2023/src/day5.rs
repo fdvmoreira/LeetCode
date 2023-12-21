@@ -95,7 +95,7 @@
 //
 //
 
-use std::{collections::HashMap, u32};
+use std::{collections::HashMap, u32, u64};
 
 fn parse_seeds(seeds: &[&str]) -> Option<Vec<u32>> {
     if seeds.is_empty() {
@@ -140,7 +140,7 @@ fn map_src_to_dst(input: &[&str]) -> Option<HashMap<u32, u32>> {
     Some(output)
 }
 
-fn get_dst_value(target: &u32, haystack: &[&str]) -> Option<u32> {
+fn get_dst_value(target: &u64, haystack: &[&str]) -> Option<u64> {
     if haystack.len() < 2 {
         return None;
     }
@@ -150,23 +150,24 @@ fn get_dst_value(target: &u32, haystack: &[&str]) -> Option<u32> {
         .skip(1)
         .map(|line| {
             line.split_ascii_whitespace()
-                .map(|val| val.parse::<u32>().unwrap())
-                .collect::<Vec<u32>>()
+                .map(|val| val.parse::<u64>().unwrap())
+                .collect::<Vec<u64>>()
         })
-        .collect::<Vec<Vec<u32>>>()
+        .collect::<Vec<Vec<u64>>>()
         .into_iter()
         .filter(|vec| {
             let [_dst, src, len] = &vec[..] else { todo!() };
+
             target >= src && target <= &(src + len)
         })
         .last()
         .unwrap_or_else(|| vec![*target]);
 
     if range.len() < 3 {
-        return Some(*target);
+        return Some(*target as u64);
     }
 
-    let result: u32 = range[0] + (target - range[1]);
+    let result: u64 = (range[0] + (target - range[1])) as u64;
 
     Some(result)
 }
@@ -179,29 +180,50 @@ pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
     };
 
     let seeds: Vec<u32> = parse_seeds(seeds).unwrap();
-    //TODO: only implement the map in the RANGE of given seed
-
-    let seed_to_soil: HashMap<u32, u32> = map_src_to_dst(seed_to_soil).unwrap();
-    let soil_to_fertilizer: HashMap<u32, u32> = map_src_to_dst(soil_to_fertilizer).unwrap();
-    let fertilizer_to_water: HashMap<u32, u32> = map_src_to_dst(fertilizer_to_water).unwrap();
-    let water_to_light: HashMap<u32, u32> = map_src_to_dst(water_to_light).unwrap();
-    let light_to_temperature: HashMap<u32, u32> = map_src_to_dst(light_to_temperature).unwrap();
-    let temperature_to_humidity: HashMap<u32, u32> =
-        map_src_to_dst(temperature_to_humidity).unwrap();
-    let humidity_to_location: HashMap<u32, u32> = map_src_to_dst(humidity_to_location).unwrap();
 
     let lowest_location = seeds
         .into_iter()
-        .map(|k| seed_to_soil.get(&k).map_or_else(|| k, |v| *v))
-        .map(|k| soil_to_fertilizer.get(&k).map_or_else(|| k, |v| *v))
-        .map(|k| fertilizer_to_water.get(&k).map_or_else(|| k, |v| *v))
-        .map(|k| water_to_light.get(&k).map_or_else(|| k, |v| *v))
-        .map(|k| light_to_temperature.get(&k).map_or_else(|| k, |v| *v))
-        .map(|k| temperature_to_humidity.get(&k).map_or_else(|| k, |v| *v))
-        .map(|k| humidity_to_location.get(&k).map_or_else(|| k, |v| *v))
+        .map(|seed| {
+            get_dst_value(&(seed as u64), seed_to_soil).map_or_else(
+                || 0,
+                |soil| {
+                    get_dst_value(&soil, soil_to_fertilizer).map_or_else(
+                        || 0,
+                        |fertilizer| {
+                            get_dst_value(&fertilizer, fertilizer_to_water).map_or_else(
+                                || 0,
+                                |water| {
+                                    get_dst_value(&water, water_to_light).map_or_else(
+                                        || 0,
+                                        |light| {
+                                            get_dst_value(&light, light_to_temperature).map_or_else(
+                                                || 0,
+                                                |temp| {
+                                                    get_dst_value(&temp, temperature_to_humidity)
+                                                        .map_or_else(
+                                                            || 0,
+                                                            |humidity| {
+                                                                get_dst_value(
+                                                                    &humidity,
+                                                                    humidity_to_location,
+                                                                )
+                                                                .unwrap()
+                                                            },
+                                                        )
+                                                },
+                                            )
+                                        },
+                                    )
+                                },
+                            )
+                        },
+                    )
+                },
+            )
+        })
         .min();
 
-    Ok(lowest_location.unwrap())
+    Ok((lowest_location.unwrap() as u64).try_into().unwrap())
 }
 
 pub mod utils {
@@ -263,18 +285,22 @@ mod tests {
         let target = 99;
         let result = get_dst_value(&target, &haystack).unwrap();
         assert_that!(result, eq(51));
+
         let haystack = ["seed-to-soil map:", "23 76 20", "22 90 8"];
         let target = 97;
         let result = get_dst_value(&target, &haystack).unwrap();
         assert_that!(result, eq(29));
+
         let haystack = ["seed-to-soil map:", "9 88 38", "95 87 5"];
         let target = 1002;
         let result = get_dst_value(&target, &haystack).unwrap();
         assert_that!(result, eq(1002));
+
         let haystack = ["seed-to-soil map:", "9 88 38", "95 87 5"];
         let target = 7;
         let result = get_dst_value(&target, &haystack).unwrap();
         assert_that!(result, eq(7));
+
         let haystack = ["seed-to-soil map:"];
         let target = 7;
         let result = get_dst_value(&target, &haystack);
