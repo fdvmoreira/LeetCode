@@ -140,6 +140,37 @@ fn map_src_to_dst(input: &[&str]) -> Option<HashMap<u32, u32>> {
     Some(output)
 }
 
+fn get_dst_value(target: &u32, haystack: &[&str]) -> Option<u32> {
+    if haystack.len() < 2 {
+        return None;
+    }
+
+    let range = haystack
+        .iter()
+        .skip(1)
+        .map(|line| {
+            line.split_ascii_whitespace()
+                .map(|val| val.parse::<u32>().unwrap())
+                .collect::<Vec<u32>>()
+        })
+        .collect::<Vec<Vec<u32>>>()
+        .into_iter()
+        .filter(|vec| {
+            let [_dst, src, len] = &vec[..] else { todo!() };
+            target >= src && target <= &(src + len)
+        })
+        .last()
+        .unwrap_or_else(|| vec![*target]);
+
+    if range.len() < 3 {
+        return Some(*target);
+    }
+
+    let result: u32 = range[0] + (target - range[1]);
+
+    Some(result)
+}
+
 pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
     let [seeds, seed_to_soil, soil_to_fertilizer, fertilizer_to_water, water_to_light, light_to_temperature, temperature_to_humidity, humidity_to_location] =
         data.split(|line| line.is_empty()).collect::<Vec<_>>()[..]
@@ -148,6 +179,8 @@ pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
     };
 
     let seeds: Vec<u32> = parse_seeds(seeds).unwrap();
+    //TODO: only implement the map in the RANGE of given seed
+
     let seed_to_soil: HashMap<u32, u32> = map_src_to_dst(seed_to_soil).unwrap();
     let soil_to_fertilizer: HashMap<u32, u32> = map_src_to_dst(soil_to_fertilizer).unwrap();
     let fertilizer_to_water: HashMap<u32, u32> = map_src_to_dst(fertilizer_to_water).unwrap();
@@ -221,6 +254,30 @@ mod tests {
         assert_that!(result.get(&90), some(eq(&92u32)));
         let input = [];
         let result = map_src_to_dst(&input);
+        assert_pred!(result.is_none());
+    }
+
+    #[test]
+    fn test_get_dst_value() {
+        let haystack = ["seed-to-soil map:", "50 98 2", "52 50 48"];
+        let target = 99;
+        let result = get_dst_value(&target, &haystack).unwrap();
+        assert_that!(result, eq(51));
+        let haystack = ["seed-to-soil map:", "23 76 20", "22 90 8"];
+        let target = 97;
+        let result = get_dst_value(&target, &haystack).unwrap();
+        assert_that!(result, eq(29));
+        let haystack = ["seed-to-soil map:", "9 88 38", "95 87 5"];
+        let target = 1002;
+        let result = get_dst_value(&target, &haystack).unwrap();
+        assert_that!(result, eq(1002));
+        let haystack = ["seed-to-soil map:", "9 88 38", "95 87 5"];
+        let target = 7;
+        let result = get_dst_value(&target, &haystack).unwrap();
+        assert_that!(result, eq(7));
+        let haystack = ["seed-to-soil map:"];
+        let target = 7;
+        let result = get_dst_value(&target, &haystack);
         assert_pred!(result.is_none());
     }
 }
