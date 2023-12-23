@@ -216,35 +216,51 @@ pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
         todo!()
     };
 
-    let seeds: Vec<u32> = build_seeds(parse_seeds(seeds).unwrap()).unwrap();
+    let seeds: Vec<u32> = parse_seeds(seeds).unwrap();
 
-    let lowest_location = seeds
+    let mut lowest_location = Vec::new();
+    seeds
         .into_iter()
-        .map(|seed| {
-            get_dst_value(&(seed as u64), seed_to_soil).map_or_else(
-                || 0,
-                |soil| {
-                    get_dst_value(&soil, soil_to_fertilizer).map_or_else(
+        .enumerate()
+        .collect::<Vec<(usize, u32)>>()
+        .split_inclusive(|(idx, _)| idx % 2 == 1)
+        .for_each(|pair| {
+            let [(_, start), (_, length)] = &pair[..] else {
+                todo!()
+            };
+            let min = (*start..*start + *length)
+                .into_iter()
+                .map(|seed| {
+                    get_dst_value(&(seed as u64), seed_to_soil).map_or_else(
                         || 0,
-                        |fertilizer| {
-                            get_dst_value(&fertilizer, fertilizer_to_water).map_or_else(
+                        |soil| {
+                            get_dst_value(&soil, soil_to_fertilizer).map_or_else(
                                 || 0,
-                                |water| {
-                                    get_dst_value(&water, water_to_light).map_or_else(
+                                |fertilizer| {
+                                    get_dst_value(&fertilizer, fertilizer_to_water).map_or_else(
                                         || 0,
-                                        |light| {
-                                            get_dst_value(&light, light_to_temperature).map_or_else(
+                                        |water| {
+                                            get_dst_value(&water, water_to_light).map_or_else(
                                                 || 0,
-                                                |temp| {
-                                                    get_dst_value(&temp, temperature_to_humidity)
+                                                |light| {
+                                                    get_dst_value(&light, light_to_temperature)
                                                         .map_or_else(
                                                             || 0,
-                                                            |humidity| {
+                                                            |temp| {
                                                                 get_dst_value(
-                                                                    &humidity,
-                                                                    humidity_to_location,
+                                                                    &temp,
+                                                                    temperature_to_humidity,
                                                                 )
-                                                                .unwrap()
+                                                                .map_or_else(
+                                                                    || 0,
+                                                                    |humidity| {
+                                                                        get_dst_value(
+                                                                            &humidity,
+                                                                            humidity_to_location,
+                                                                        )
+                                                                        .unwrap()
+                                                                    },
+                                                                )
                                                             },
                                                         )
                                                 },
@@ -255,12 +271,14 @@ pub fn get_lowest_location(data: &[&str]) -> Result<u32, std::io::ErrorKind> {
                             )
                         },
                     )
-                },
-            )
-        })
-        .min();
+                })
+                .min();
+            lowest_location.push(min.unwrap());
+        });
 
-    Ok((lowest_location.unwrap() as u64).try_into().unwrap())
+    Ok((*lowest_location.iter().min().unwrap() as u64)
+        .try_into()
+        .unwrap())
 }
 
 pub mod utils {
