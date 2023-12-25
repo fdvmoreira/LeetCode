@@ -47,7 +47,23 @@ pub fn max_winning_ways(races: &[&str]) -> Option<u32> {
         return None;
     };
 
-    let ways = 0u32;
+    let mut ways: u32 = 0;
+
+    races.iter().for_each(|(time, record_distance)| {
+        let mut new_record_counter = 0;
+        for hold_dur in 0..=*time {
+            let new_distances = hold_dur * (time - hold_dur);
+            if new_distances > *record_distance {
+                new_record_counter += 1;
+            }
+        }
+        if ways == 0 {
+            ways = new_record_counter;
+            return;
+        }
+
+        ways *= new_record_counter;
+    });
 
     Some(ways)
 }
