@@ -40,7 +40,7 @@ pub fn max_winning_ways(races: &[&str]) -> Option<u32> {
     Some(ways)
 }
 
-pub fn parse_races(races: &[&str]) -> Option<Vec<(u32, u32)>> {
+pub fn parse_races(races: &[&str]) -> Option<Vec<(u64, u64)>> {
     if races.is_empty() {
         return None;
     }
@@ -50,20 +50,19 @@ pub fn parse_races(races: &[&str]) -> Option<Vec<(u32, u32)>> {
         .map(|line| {
             line.split_ascii_whitespace()
                 .skip(1)
-                .map(|num| num.parse::<u32>().unwrap())
-                .collect::<Vec<u32>>()
+                .fold("".to_string(), |acc, x| {
+                    let x = x.trim().to_string();
+                    format!("{acc}{x}")
+                })
+                .parse::<u64>()
+                .unwrap()
         })
-        .collect::<Vec<Vec<u32>>>()[..]
+        .collect::<Vec<u64>>()[..]
     else {
         todo!()
     };
 
-    let result = times
-        .iter()
-        .zip(distances.iter())
-        .into_iter()
-        .map(|(fst, snd)| (*fst, *snd))
-        .collect::<Vec<(u32, u32)>>();
+    let result = vec![(*times, *distances)];
 
     Some(result)
 }
@@ -76,9 +75,9 @@ mod tests {
 
     #[test]
     fn test_parse_races() {
-        let data = vec!["Time:      7  15   30", "Distance:  9  40  200"];
+        let data = vec!["Time:      7  15  30", "Distance:  9  40  200"];
         let result = parse_races(&data).unwrap();
-        assert_that!(result, eq(vec![(7, 9), (15, 40), (30, 200)]));
+        assert_that!(result, eq(vec![(71530, 940200)]));
 
         let data = vec![];
         let result = parse_races(&data);
@@ -89,7 +88,7 @@ mod tests {
     fn test_max_winning_ways() {
         let data = vec!["Time:      7  15   30", "Distance:  9  40  200"];
         let result = max_winning_ways(&data).unwrap();
-        assert_that!(result, eq(288));
+        assert_that!(result, eq(71503));
 
         let data = vec![];
         let result = max_winning_ways(&data);
