@@ -1,10 +1,10 @@
-use aoc_2023::day5_part_two::get_lowest_location;
+use aoc_2023::day6::max_winning_ways;
 use aoc_2023::utils::load_file_content;
 
 fn main() {
-    let data = load_file_content("data/day5.txt").unwrap();
+    let data = load_file_content("data/day6.txt").unwrap();
     println!("Calculating ...");
-    let minimum_location =
-        get_lowest_location(&data.iter().map(|row| row.as_str()).collect::<Vec<&str>>()).unwrap();
-    println!("Result {:?}", minimum_location);
+    let ways =
+        max_winning_ways(&data.iter().map(|row| row.as_str()).collect::<Vec<&str>>()).unwrap();
+    println!("Result {:?}", ways);
 }
