@@ -1,4 +1,4 @@
-use aoc_2023::day6::max_winning_ways;
+use aoc_2023::day6_part_two::max_winning_ways;
 use aoc_2023::utils::load_file_content;
 
 fn main() {

@@ -3,7 +3,8 @@
 // pub mod day3;
 // pub mod day4;
 // pub mod day5_part_two;
-pub mod day6;
+// pub mod day6;
+pub mod day6_part_two;
 
 pub mod utils {
     use std::{
