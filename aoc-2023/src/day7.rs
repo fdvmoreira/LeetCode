@@ -50,6 +50,53 @@
 //
 // Find the rank of every hand in your set. What are the total winnings?
 //
+
+use std::collections::HashMap;
+
+#[repr(u8)]
+#[derive(Debug)]
+pub enum HandType {
+    FiveOfAKind = 7,
+    FourOfAKind = 6,
+    FullHouse = 5,
+    ThreeOfAKind = 4,
+    TwoPair = 3,
+    OnePair = 2,
+    HighCard = 1,
+}
+
+fn get_hand_type(hand: &str) -> Option<HandType> {
+    if hand.len() != 5 {
+        return None;
+    }
+
+    let mut chars: HashMap<String, u32> = HashMap::new();
+    hand.chars().for_each(|char| {
+        chars.insert(
+            char.to_string(),
+            chars.get(&char.to_string()).unwrap_or(&0) + 1,
+        );
+    });
+
+    if chars.len() == 5 {
+        return Some(HandType::HighCard);
+    } else if chars.len() == 4 {
+        return Some(HandType::OnePair);
+    } else if chars.len() == 3 && chars.values().any(|v| *v == 2) {
+        return Some(HandType::TwoPair);
+    } else if chars.len() == 3 && chars.values().any(|v| *v == 3) {
+        return Some(HandType::ThreeOfAKind);
+    } else if chars.len() == 2 && chars.values().any(|v| *v == 3) {
+        return Some(HandType::FullHouse);
+    } else if chars.len() == 2 && chars.values().any(|v| *v == 4) {
+        return Some(HandType::FourOfAKind);
+    } else if chars.len() == 1 {
+        return Some(HandType::FiveOfAKind);
+    } else {
+        return None;
+    }
+}
+
 pub fn total_winnings(data: &[&str]) -> Option<u32> {
     let total = 0;
     Some(total)
@@ -73,5 +120,36 @@ mod tests {
         let result = total_winnings(&input).unwrap();
         let expected = 6440;
         assert_that!(result, eq(expected));
+    }
+
+    #[test]
+    fn test_get_hand_type() {
+        let hand = "AAAAA";
+        let result = get_hand_type(hand).unwrap() as u32;
+        assert_that!(result, eq(HandType::FiveOfAKind as u32));
+
+        let hand = "AAA8A";
+        let result = get_hand_type(hand).unwrap() as u32;
+        assert_that!(result, eq(HandType::FourOfAKind as u32));
+
+        let hand = "AA88A";
+        let result = get_hand_type(hand).unwrap() as u32;
+        assert_that!(result, eq(HandType::FullHouse as u32));
+
+        let hand = "AA28A";
+        let result = get_hand_type(hand).unwrap() as u32;
+        assert_that!(result, eq(HandType::ThreeOfAKind as u32));
+
+        let hand = "2AA82";
+        let result = get_hand_type(hand).unwrap() as u32;
+        assert_that!(result, eq(HandType::TwoPair as u32));
+
+        let hand = "6878A";
+        let result = get_hand_type(hand).unwrap() as u32;
+        assert_that!(result, eq(HandType::OnePair as u32));
+
+        let hand = "2358A";
+        let result = get_hand_type(hand).unwrap() as u32;
+        assert_that!(result, eq(HandType::HighCard as u32));
     }
 }
