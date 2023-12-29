@@ -51,7 +51,7 @@
 // Find the rank of every hand in your set. What are the total winnings?
 //
 
-use std::collections::HashMap;
+use std::{cmp::Ordering, collections::HashMap, usize};
 
 #[repr(u8)]
 #[derive(Debug)]
@@ -98,7 +98,52 @@ fn get_hand_type(hand: &str) -> Option<HandType> {
 }
 
 pub fn total_winnings(data: &[&str]) -> Option<u32> {
-    let total = 0;
+    if data.is_empty() {
+        return None;
+    }
+
+    let card_map: HashMap<&str, usize> = HashMap::from_iter(
+        vec![
+            "A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2",
+        ]
+        .iter()
+        .rev()
+        .enumerate()
+        .map(|(idx, s)| (*s, idx)),
+    );
+
+    let mut hands = data
+        .iter()
+        .map(|line| {
+            let biding = line.split_ascii_whitespace().collect::<Vec<_>>();
+            let [hand, bid] = biding.as_slice() else {
+                todo!()
+            };
+            let hand_type = get_hand_type(hand).unwrap() as u32;
+            (hand_type, *hand, *bid)
+        })
+        .collect::<Vec<(u32, &str, &str)>>();
+
+    // sort and reverse the hands
+    hands.sort_by(|a, b| {
+        let mut ord = a.0.cmp(&b.0);
+
+        let mut idx = 0;
+        while ord == Ordering::Equal && idx < a.1.len() {
+            ord = card_map
+                .get(a.1.get(idx..idx + 1).unwrap())
+                .unwrap()
+                .cmp(card_map.get(b.1.get(idx..idx + 1).unwrap()).unwrap());
+            idx += 1;
+        }
+
+        ord
+    });
+
+    // rank and sum
+    let total = hands.iter().enumerate().fold(0, |acc, tpl| {
+        acc + (tpl.0 as u32 + 1) * (tpl.1).2.parse::<u32>().unwrap()
+    });
     Some(total)
 }
 
