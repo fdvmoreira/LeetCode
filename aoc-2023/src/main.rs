@@ -1,4 +1,4 @@
-use aoc_2023::day7::total_winnings;
+use aoc_2023::day7_part_two::total_winnings;
 use aoc_2023::utils::load_file_content;
 
 fn main() {
