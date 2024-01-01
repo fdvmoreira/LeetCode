@@ -48,6 +48,18 @@ fn get_hand_type(hand: &str) -> Option<HandType> {
         );
     });
 
+    if let Some(joker_count) = chars.get("J") {
+        let (mut current_max_k, mut current_max_v) = ("".to_string(), 0u32);
+        for (k, v) in chars.iter().filter(|(k, _)| **k != "J".to_string()) {
+            if *v > current_max_v {
+                current_max_v = v.clone();
+                current_max_k = k.clone();
+            }
+        }
+        chars.insert(current_max_k, current_max_v + joker_count);
+        chars.remove_entry("J");
+    }
+
     if chars.len() == 5 {
         return Some(HandType::HighCard);
     } else if chars.len() == 4 {
@@ -74,7 +86,7 @@ pub fn total_winnings(data: &[&str]) -> Option<u32> {
 
     let card_map: HashMap<&str, usize> = HashMap::from_iter(
         vec![
-            "A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2",
+            "A", "K", "Q", "T", "9", "8", "7", "6", "5", "4", "3", "2", "J",
         ]
         .iter()
         .rev()
@@ -133,7 +145,7 @@ mod tests {
             "QQQJA 483",
         ];
         let result = total_winnings(&input).unwrap();
-        let expected = 6440;
+        let expected = 5905;
         assert_that!(result, eq(expected));
     }
 
@@ -143,7 +155,15 @@ mod tests {
         let result = get_hand_type(hand).unwrap() as u32;
         assert_that!(result, eq(HandType::FiveOfAKind as u32));
 
-        let hand = "AAA8A";
+        let hand = "T55J5";
+        let result = get_hand_type(hand).unwrap() as u32;
+        assert_that!(result, eq(HandType::FourOfAKind as u32));
+
+        let hand = "KTJJT";
+        let result = get_hand_type(hand).unwrap() as u32;
+        assert_that!(result, eq(HandType::FourOfAKind as u32));
+
+        let hand = "QQQJA";
         let result = get_hand_type(hand).unwrap() as u32;
         assert_that!(result, eq(HandType::FourOfAKind as u32));
 
@@ -155,11 +175,11 @@ mod tests {
         let result = get_hand_type(hand).unwrap() as u32;
         assert_that!(result, eq(HandType::ThreeOfAKind as u32));
 
-        let hand = "2AA82";
+        let hand = "KK677";
         let result = get_hand_type(hand).unwrap() as u32;
         assert_that!(result, eq(HandType::TwoPair as u32));
 
-        let hand = "6878A";
+        let hand = "32T3K";
         let result = get_hand_type(hand).unwrap() as u32;
         assert_that!(result, eq(HandType::OnePair as u32));
 
