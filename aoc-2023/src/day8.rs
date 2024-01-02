@@ -40,7 +40,18 @@ mod tests {
 
     use super::*;
     #[test]
-    fn it_works() {
+    fn test_total_steps() {
+        let input = vec![
+            "RL",
+            "AAA = (BBB, CCC)",
+            "BBB = (DDD, EEE)",
+            "CCC = (ZZZ, GGG)",
+            "DDD = (DDD, DDD)",
+            "EEE = (EEE, EEE)",
+            "GGG = (GGG, GGG)",
+            "ZZZ = (ZZZ, ZZZ)",
+        ];
+        let result = total_steps(&input);
         assert!(true);
     }
 }
