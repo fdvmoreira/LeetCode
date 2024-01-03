@@ -29,6 +29,27 @@
 // ZZZ = (ZZZ, ZZZ)
 // Starting at AAA, follow the left/right instructions. How many steps are required to reach ZZZ?
 //
+use std::collections::HashMap;
+
+fn parse_directions_and_network(
+    data: &[&str],
+) -> Option<(Vec<char>, HashMap<String, (String, String)>)> {
+    let [directions, network] = &data.split(|line| line.is_empty()).collect::<Vec<_>>()[..] else {
+        return None;
+    };
+
+    let directions = directions
+        .to_owned()
+        .last()
+        .unwrap()
+        .to_string()
+        .chars()
+        .collect::<Vec<char>>();
+
+    let network = network.to_owned().iter_mut().map(|line|line.split("="))
+    // Some((directions,network))
+    todo!()
+}
 
 pub fn total_steps(docs: &[&str]) -> Option<u32> {
     let total_steps = 0u32;
@@ -37,6 +58,10 @@ pub fn total_steps(docs: &[&str]) -> Option<u32> {
 
 #[cfg(test)]
 mod tests {
+
+    use std::{collections::HashMap, result};
+
+    use googletest::{assert_that, matchers::eq};
 
     use super::*;
     #[test]
@@ -51,7 +76,29 @@ mod tests {
             "GGG = (GGG, GGG)",
             "ZZZ = (ZZZ, ZZZ)",
         ];
-        let result = total_steps(&input);
-        assert!(true);
+        let result = total_steps(&input).unwrap();
+        assert_that!(result, eq(2));
+    }
+
+    #[test]
+    fn test_parse_directions_and_network() {
+        let data = vec![
+            "LLR",
+            "AAA = (BBB, BBB)",
+            "BBB = (AAA, ZZZ)",
+            "ZZZ = (ZZZ, ZZZ)",
+        ];
+        let result = parse_directions_and_network(&data).unwrap();
+        let (directions, network) = (result.0, result.1);
+
+        assert_that!(directions, eq(vec!['L', 'L', 'R']));
+        assert_that!(
+            network,
+            eq(HashMap::<String, (String, String)>::from([
+                ("AAA".to_string(), ("BBB".to_string(), "BBB".to_string())),
+                ("BBB".to_string(), ("AAA".to_string(), "ZZZ".to_string())),
+                ("ZZZ".to_string(), ("ZZZ".to_string(), "ZZZ".to_string())),
+            ]))
+        );
     }
 }
