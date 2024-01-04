@@ -31,11 +31,11 @@
 //
 use std::collections::HashMap;
 
-fn parse_directions_and_network(
-    data: &[&str],
-) -> Option<(Vec<char>, HashMap<String, (String, String)>)> {
+type ParsedDirNNetwork = Option<(Vec<char>, HashMap<String, (String, String)>)>;
+
+pub fn parse_directions_and_network(data: &[&str]) -> ParsedDirNNetwork {
     let [directions, network] = &data.split(|line| line.is_empty()).collect::<Vec<_>>()[..] else {
-        return None;
+        todo!() // TODO: What to do if we get here
     };
 
     let directions = directions
@@ -46,12 +46,36 @@ fn parse_directions_and_network(
         .chars()
         .collect::<Vec<char>>();
 
-    let network = network.to_owned().iter_mut().map(|line|line.split("="))
-    // Some((directions,network))
-    todo!()
+    let network = network
+        .iter()
+        .map(|line| {
+            let [key, val] = &line
+                .to_owned()
+                .split('=')
+                .map(|v| v.to_owned().to_string())
+                .collect::<Vec<String>>()[..]
+            else {
+                todo!()
+            };
+            let [left, right] = &val
+                .trim_matches([')', '('])
+                .split_terminator(',')
+                .map(|w| w.trim().to_string())
+                .collect::<Vec<String>>()[..]
+            else {
+                todo!()
+            };
+            (key.to_string(), (left.to_string(), right.to_string()))
+        })
+        // .collect::<Vec<_>>();
+        .collect::<Vec<(String, (String, String))>>();
+
+    let network = HashMap::<String, (String, String)>::from_iter(network);
+
+    Some((directions, network))
 }
 
-pub fn total_steps(docs: &[&str]) -> Option<u32> {
+pub fn total_steps(_docs: &[&str]) -> Option<u32> {
     let total_steps = 0u32;
     Some(total_steps)
 }
@@ -59,7 +83,7 @@ pub fn total_steps(docs: &[&str]) -> Option<u32> {
 #[cfg(test)]
 mod tests {
 
-    use std::{collections::HashMap, result};
+    use std::collections::HashMap;
 
     use googletest::{assert_that, matchers::eq};
 
