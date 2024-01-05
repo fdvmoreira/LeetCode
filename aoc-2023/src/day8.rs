@@ -35,7 +35,7 @@ type ParsedDirNNetwork = Option<(Vec<char>, HashMap<String, (String, String)>)>;
 
 pub fn parse_directions_and_network(data: &[&str]) -> ParsedDirNNetwork {
     let [directions, network] = &data.split(|line| line.is_empty()).collect::<Vec<_>>()[..] else {
-        todo!() // TODO: What to do if we get here
+        todo!()
     };
 
     let directions = directions
@@ -85,13 +85,14 @@ mod tests {
 
     use std::collections::HashMap;
 
-    use googletest::{assert_that, matchers::eq};
+    use googletest::{assert_pred, assert_that, matchers::eq, verify_pred, Result};
 
     use super::*;
     #[test]
     fn test_total_steps() {
         let input = vec![
             "RL",
+            "",
             "AAA = (BBB, CCC)",
             "BBB = (DDD, EEE)",
             "CCC = (ZZZ, GGG)",
@@ -104,10 +105,11 @@ mod tests {
         assert_that!(result, eq(2));
     }
 
-    #[test]
+    #[googletest::test]
     fn test_parse_directions_and_network() {
         let data = vec![
             "LLR",
+            "",
             "AAA = (BBB, BBB)",
             "BBB = (AAA, ZZZ)",
             "ZZZ = (ZZZ, ZZZ)",
@@ -115,14 +117,17 @@ mod tests {
         let result = parse_directions_and_network(&data).unwrap();
         let (directions, network) = (result.0, result.1);
 
-        assert_that!(directions, eq(vec!['L', 'L', 'R']));
-        assert_that!(
-            network,
-            eq(HashMap::<String, (String, String)>::from([
-                ("AAA".to_string(), ("BBB".to_string(), "BBB".to_string())),
-                ("BBB".to_string(), ("AAA".to_string(), "ZZZ".to_string())),
-                ("ZZZ".to_string(), ("ZZZ".to_string(), "ZZZ".to_string())),
-            ]))
-        );
+        let expected_vec = vec!['L', 'L', 'R'];
+        let expected_hashmap = HashMap::<String, (String, String)>::from([
+            ("AAA".to_string(), ("BBB".to_string(), "BBB".to_string())),
+            ("BBB".to_string(), ("AAA".to_string(), "ZZZ".to_string())),
+            ("ZZZ".to_string(), ("ZZZ".to_string(), "ZZZ".to_string())),
+        ]);
+
+        assert_that!(directions, eq(expected_vec));
+        assert_that!(network.len(), eq(expected_hashmap.len()));
+        assert!(expected_hashmap.contains_key("AAA"));
+        assert!(expected_hashmap.contains_key("BBB"));
+        assert!(expected_hashmap.contains_key("ZZZ"));
     }
 }
