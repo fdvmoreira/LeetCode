@@ -75,8 +75,22 @@ pub fn parse_directions_and_network(data: &[&str]) -> ParsedDirNNetwork {
     Some((directions, network))
 }
 
-pub fn total_steps(_docs: &[&str]) -> Option<u32> {
-    let total_steps = 0u32;
+pub fn get_first_and_last_nodes(data: &[&str]) -> Option<(String, String)> {
+    let snd_part = data.split(|line| line.is_empty()).last().unwrap();
+
+    let [first, .., last] = snd_part else { todo!() };
+
+    Some((
+        first.split('=').nth(0).unwrap().trim().to_string(),
+        last.split('=').nth(0).unwrap().trim().to_string(),
+    ))
+}
+
+pub fn total_steps(data: &[&str]) -> Option<u32> {
+    let (directions, network) = parse_directions_and_network(&data).unwrap();
+
+    let mut total_steps = 0u32;
+
     Some(total_steps)
 }
 
@@ -85,7 +99,7 @@ mod tests {
 
     use std::collections::HashMap;
 
-    use googletest::{assert_pred, assert_that, matchers::eq, verify_pred, Result};
+    use googletest::{assert_that, matchers::eq};
 
     use super::*;
     #[test]
@@ -129,5 +143,20 @@ mod tests {
         assert!(expected_hashmap.contains_key("AAA"));
         assert!(expected_hashmap.contains_key("BBB"));
         assert!(expected_hashmap.contains_key("ZZZ"));
+    }
+
+    #[test]
+    fn test_get_first_and_last_nodes() {
+        let data = vec![
+            "LRLR",
+            "",
+            "AAA = (CCC,DDD)",
+            "BBB = (FFF,JJJ)",
+            "XXX = (RRR,EEE)",
+        ];
+        let output = get_first_and_last_nodes(&data).unwrap();
+
+        assert_that!(output.0, eq("AAA".to_string()));
+        assert_that!(output.1, eq("XXX".to_string()));
     }
 }
