@@ -52,7 +52,7 @@ pub fn parse_directions_and_network(data: &[&str]) -> ParsedDirNNetwork {
             let [key, val] = &line
                 .to_owned()
                 .split('=')
-                .map(|v| v.to_owned().to_string())
+                .map(|v| v.trim().to_owned().to_string())
                 .collect::<Vec<String>>()[..]
             else {
                 todo!()
@@ -87,11 +87,30 @@ pub fn get_first_and_last_nodes(data: &[&str]) -> Option<(String, String)> {
 }
 
 pub fn total_steps(data: &[&str]) -> Option<u32> {
+    let (start, target) = get_first_and_last_nodes(&data).unwrap();
     let (directions, network) = parse_directions_and_network(&data).unwrap();
 
-    let mut total_steps = 0u32;
+    let mut total_steps = 0;
+    let mut curr_node = start;
 
-    Some(total_steps)
+    while curr_node != target {
+        let node = network.get(&curr_node).unwrap();
+
+        curr_node = if directions.get(total_steps % directions.len()).unwrap() == &'L' {
+            node.0.to_owned()
+        } else {
+            node.1.to_owned()
+        };
+
+        total_steps += 1;
+        println!(
+            "Nlen:{} Tsteps:{} currN:{curr_node} Tgt:{target}",
+            network.len(),
+            total_steps
+        );
+    }
+
+    Some(total_steps as u32)
 }
 
 #[cfg(test)]
@@ -117,6 +136,16 @@ mod tests {
         ];
         let result = total_steps(&input).unwrap();
         assert_that!(result, eq(2));
+
+        let input = vec![
+            "LLR",
+            "",
+            "AAA = (BBB, BBB)",
+            "BBB = (AAA, ZZZ)",
+            "ZZZ = (ZZZ, ZZZ)",
+        ];
+        let result = total_steps(&input).unwrap();
+        assert_that!(result, eq(6));
     }
 
     #[googletest::test]
