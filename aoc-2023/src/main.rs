@@ -1,4 +1,4 @@
-use aoc_2023::day9::extrapolated_sum;
+use aoc_2023::day9_part_two::extrapolated_sum;
 use aoc_2023::utils::load_file_content;
 
 fn main() {
