@@ -65,13 +65,13 @@
 //
 // ---
 
-fn extrapolate_next_value(sequence: &[u32]) -> Option<u32> {
+fn extrapolate_next_value(sequence: &[i32]) -> Option<i32> {
     if sequence.is_empty() {
         return None;
     }
 
-    let mut stack = Vec::<Vec<u32>>::new();
-    let mut curr_seq: Vec<u32> = sequence.to_vec();
+    let mut stack = Vec::<Vec<i32>>::new();
+    let mut curr_seq: Vec<i32> = sequence.to_vec();
 
     while curr_seq.iter().any(|n| *n != 0) {
         let mut tmp = vec![];
@@ -82,7 +82,6 @@ fn extrapolate_next_value(sequence: &[u32]) -> Option<u32> {
         curr_seq = tmp;
     }
 
-    println!("{:#?}", stack);
     stack.last_mut().unwrap().push(0);
 
     while stack.len() != 1 {
@@ -96,8 +95,23 @@ fn extrapolate_next_value(sequence: &[u32]) -> Option<u32> {
     Some(*next_val + sequence.last().unwrap())
 }
 
-pub fn extrapolated_sum(data: &[&str]) -> Option<u32> {
-    todo!()
+pub fn extrapolated_sum(data: &[&str]) -> Option<i32> {
+    let parsed_data = data
+        .to_vec()
+        .into_iter()
+        .map(|line| {
+            line.split_whitespace()
+                .map(|v| v.parse::<i32>().unwrap())
+                .collect::<Vec<i32>>()
+        })
+        .collect::<Vec<Vec<i32>>>();
+
+    let sum = parsed_data
+        .iter()
+        .map(|v| extrapolate_next_value(&v).unwrap())
+        .sum();
+
+    Some(sum)
 }
 
 #[cfg(test)]
