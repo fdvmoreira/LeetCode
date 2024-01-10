@@ -66,7 +66,34 @@
 // ---
 
 fn extrapolate_next_value(sequence: &[u32]) -> Option<u32> {
-    todo!()
+    if sequence.is_empty() {
+        return None;
+    }
+
+    let mut stack = Vec::<Vec<u32>>::new();
+    let mut curr_seq: Vec<u32> = sequence.to_vec();
+
+    while curr_seq.iter().any(|n| *n != 0) {
+        let mut tmp = vec![];
+        for idx in 1..curr_seq.len() {
+            tmp.push(curr_seq[idx] - curr_seq[idx - 1]);
+        }
+        stack.push(tmp.to_owned());
+        curr_seq = tmp;
+    }
+
+    println!("{:#?}", stack);
+    stack.last_mut().unwrap().push(0);
+
+    while stack.len() != 1 {
+        let last = stack.pop().unwrap().last().unwrap().to_owned();
+        let prev_seq = stack.last_mut().unwrap();
+        prev_seq.push(last + prev_seq.iter().last().unwrap());
+    }
+
+    let next_val = stack.iter().last().unwrap().iter().last().unwrap();
+
+    Some(*next_val + sequence.last().unwrap())
 }
 
 pub fn extrapolated_sum(data: &[&str]) -> Option<u32> {
