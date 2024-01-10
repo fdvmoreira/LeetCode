@@ -75,15 +75,27 @@ pub fn extrapolated_sum(data: &[&str]) -> Option<u32> {
 
 #[cfg(test)]
 mod tests {
+    use googletest::{assert_that, matchers::eq};
+
     use super::*;
 
     #[test]
     fn test_extrapolate_next_value() {
-        assert!(true)
+        let data = vec![0, 3, 6, 9, 12, 15];
+        let output = extrapolate_next_value(&data).unwrap_or_else(|| 0);
+        assert_that!(output, eq(18));
+        let data = vec![1, 3, 6, 10, 15, 21];
+        let output = extrapolate_next_value(&data).unwrap_or_else(|| 0);
+        assert_that!(output, eq(28));
+        let data = vec![10, 13, 16, 21, 30, 45];
+        let output = extrapolate_next_value(&data).unwrap_or_else(|| 0);
+        assert_that!(output, eq(68));
     }
 
     #[test]
     fn test_extrapolated_sum() {
-        assert!(true);
+        let data = ["0 3 6 9 12 15", "1 3 6 10 15 21", "10 13 16 21 30 45"];
+        let output = extrapolated_sum(&data).unwrap_or_else(|| 0);
+        assert_that!(output, eq(114))
     }
 }
