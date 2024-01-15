@@ -94,7 +94,7 @@
 //
 //
 
-pub fn total_steps(data: &[&str]) -> Option<u32> {
+pub fn furthest_point_from_start(data: &[&str]) -> Option<u32> {
     todo!()
 }
 
@@ -102,11 +102,15 @@ pub fn total_steps(data: &[&str]) -> Option<u32> {
 mod tests {
 
     use super::*;
-    use googletest::{assert_pred, assert_that, matchers::eq, Result};
+    use googletest::{assert_that, matchers::eq};
     use rstest::rstest;
 
+    #[rstest]
     #[test]
-    fn total_steps_returns_the_number_of_steps() {
-        assert_pred!((||true)());
+    #[case(vec![".....", ".S-7.", ".|.|.", ".L-J.", "....."],4)]
+    #[case(vec!["..F7.", ".FJ|.", "SJ.L7", "|F--J", "LJ..."],8)]
+    fn total_steps_returns_the_number_of_steps(#[case] input: Vec<&str>, #[case] expected: u32) {
+        let actual = furthest_point_from_start(&input).unwrap();
+        assert_that!(actual, eq(expected));
     }
 }
