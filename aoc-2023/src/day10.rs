@@ -91,18 +91,46 @@
 // 14567
 // 23...
 // Find the single giant loop starting at S. How many steps along the loop does it take to get from the starting position to the point farthest from the starting position?
-//
+//---
+// Find the loop
+// Assign a incremental number to each tile that forms the loop
+// Return the half of the total pipe length
 //
 
+fn get_start_index(grid: Vec<Vec<char>>) -> Option<(u32, u32)> {
+    for row in 0..grid.len() {
+        for col in 0..grid[row].len() {
+            if grid[row][col] == 'S' {
+                return Some((row as u32, col as u32));
+            }
+        }
+    }
+    None
+}
+
 pub fn furthest_point_from_start(data: &[&str]) -> Option<u32> {
-    todo!()
+    if data.is_empty() {
+        return None;
+    }
+
+    let grid: Vec<Vec<char>> = data
+        .into_iter()
+        .map(|line| line.chars().collect::<Vec<char>>())
+        .collect::<Vec<Vec<char>>>();
+
+    let start = get_start_index(grid).unwrap();
+
+    // find next pipe until the loop is completed
+    // save distance of each pipe from starting point
+
+    Some(0)
 }
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
-    use googletest::{assert_that, matchers::eq};
+    use googletest::{assert_that, expect_that, matchers::eq};
     use rstest::rstest;
 
     #[rstest]
@@ -111,6 +139,32 @@ mod tests {
     #[case(vec!["..F7.", ".FJ|.", "SJ.L7", "|F--J", "LJ..."],8)]
     fn total_steps_returns_the_number_of_steps(#[case] input: Vec<&str>, #[case] expected: u32) {
         let actual = furthest_point_from_start(&input).unwrap();
+        assert_that!(actual, eq(expected));
+    }
+
+    #[rstest]
+    #[test]
+    #[case(
+            vec![
+            vec!['.', '.', '.', '.', '.'],
+            vec!['.', 'S', '-', '7', '.'],
+            vec!['.', '|', '.', '|', '.'],
+            vec!['.', 'L', '-', 'J', '.'],
+            vec!['.', '.', '.', '.', '.']
+                ], (1, 1))]
+    #[case(
+            vec![
+            vec!['.', '.', 'F', '7', '.'],
+            vec!['.', 'F', 'J', '|', '.'],
+            vec!['S', 'J', '.', 'L', '7'],
+            vec!['|', 'F', '-', '-', 'J'],
+            vec!['L', 'J', '.', '.', '.']
+                ], (2, 0))]
+    fn given_a_non_empty_matrix_get_start_index_should_return(
+        #[case] input: Vec<Vec<char>>,
+        #[case] expected: (u32, u32),
+    ) {
+        let actual = get_start_index(input).unwrap();
         assert_that!(actual, eq(expected));
     }
 }
