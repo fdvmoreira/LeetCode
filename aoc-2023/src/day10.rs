@@ -97,7 +97,17 @@
 // Return the half of the total pipe length
 //
 
-fn get_start_index(grid: Vec<Vec<char>>) -> Option<(u32, u32)> {
+fn get_next_tile(
+    matrix: &Vec<Vec<char>>,
+    prev_tile: (u32, u32),
+    current_tile: (u32, u32),
+) -> Option<(u32, u32)> {
+    todo!()
+    // find the pipes connected to current pipe
+    // exclude the previous one and the next one should be the one left
+}
+
+fn get_start_index(grid: &Vec<Vec<char>>) -> Option<(u32, u32)> {
     for row in 0..grid.len() {
         for col in 0..grid[row].len() {
             if grid[row][col] == 'S' {
@@ -118,19 +128,32 @@ pub fn furthest_point_from_start(data: &[&str]) -> Option<u32> {
         .map(|line| line.chars().collect::<Vec<char>>())
         .collect::<Vec<Vec<char>>>();
 
-    let start = get_start_index(grid).unwrap();
+    let start = get_start_index(&grid).unwrap();
 
     // find next pipe until the loop is completed
     // save distance of each pipe from starting point
+    let mut current_tile = start.clone();
+    let mut prev_tile: Option<(u32, u32)> = None;
+    let mut next_tile = get_next_tile(&grid, prev_tile?, current_tile).unwrap();
+    let mut pipe_counter: u32 = 0;
 
-    Some(0)
+    while next_tile != start {
+        pipe_counter += 1;
+        prev_tile = Some(current_tile);
+        current_tile = next_tile;
+        next_tile = get_next_tile(&grid, prev_tile?, current_tile).unwrap();
+    }
+
+    let mid_pipe = pipe_counter.saturating_div(2);
+
+    Some(mid_pipe)
 }
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
-    use googletest::{assert_that, expect_that, matchers::eq};
+    use googletest::{assert_that, matchers::eq};
     use rstest::rstest;
 
     #[rstest]
@@ -164,7 +187,35 @@ mod tests {
         #[case] input: Vec<Vec<char>>,
         #[case] expected: (u32, u32),
     ) {
-        let actual = get_start_index(input).unwrap();
+        let actual = get_start_index(&input).unwrap();
+        assert_that!(actual, eq(expected));
+    }
+
+    #[rstest]
+    #[test]
+    #[case(
+            vec![
+            vec!['.', '.', '.', '.', '.'],
+            vec!['.', 'S', '-', '7', '.'],
+            vec!['.', '|', '.', '|', '.'],
+            vec!['.', 'L', '-', 'J', '.'],
+            vec!['.', '.', '.', '.', '.']
+                ], Some((1,2)), (1,3), (2, 3))]
+    #[case(
+            vec![
+            vec!['.', '.', 'F', '7', '.'],
+            vec!['.', 'F', 'J', '|', '.'],
+            vec!['S', 'J', '.', 'L', '7'],
+            vec!['|', 'F', '-', '-', 'J'],
+            vec!['L', 'J', '.', '.', '.']
+                ], Some((2,0)), (2,1),(1, 1))]
+    fn given_current_pos_get_next_tile_returns_the_next_tile_coords(
+        #[case] matrix: Vec<Vec<char>>,
+        #[case] prev_tile: Option<(u32, u32)>,
+        #[case] current_tile: (u32, u32),
+        #[case] expected: (u32, u32),
+    ) {
+        let actual = get_next_tile(&matrix, prev_tile.unwrap(), current_tile).unwrap();
         assert_that!(actual, eq(expected));
     }
 }
