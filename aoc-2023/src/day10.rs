@@ -97,6 +97,20 @@
 // Return the half of the total pipe length
 //
 
+enum Position {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+}
+
+fn get_neighbouring_pipes(
+    matrix: &Vec<Vec<char>>,
+    current_tile: (u32, u32),
+) -> Option<[(Position, PipeType); 4]> {
+    todo!()
+}
+
 fn get_next_tile(
     matrix: &Vec<Vec<char>>,
     prev_tile: (u32, u32),
