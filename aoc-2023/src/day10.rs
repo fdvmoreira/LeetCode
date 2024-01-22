@@ -97,18 +97,37 @@
 // Return the half of the total pipe length
 //
 
-enum Position {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
+use std::ops::IndexMut;
+
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Location {
+    NORTH,
+    SOUTH,
+    WEST,
+    EAST,
 }
 
-fn get_neighbouring_pipes(
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum PipeType {
+    Horizontal,
+    Vertical,
+    NorthEast,
+    NorthWest,
+    SouthEast,
+    SouthWest,
+    Ground,
+}
+
+fn get_neighbouring_pipes<Location, PipeType>(
     matrix: &Vec<Vec<char>>,
     current_tile: (u32, u32),
-) -> Option<[(Position, PipeType); 4]> {
-    todo!()
+) -> Option<[(Location, PipeType); 4]> {
+    let mut neighbours: [(Location, PipeType); 4] = todo!();
+
+    //TODO: add the Pipes to the array by checking the pipe starting in the West and ending in the
+    //South
+    //
+    Some(neighbours)
 }
 
 fn get_next_tile(
@@ -230,6 +249,34 @@ mod tests {
         #[case] expected: (u32, u32),
     ) {
         let actual = get_next_tile(&matrix, prev_tile.unwrap(), current_tile).unwrap();
+        assert_that!(actual, eq(expected));
+    }
+
+    #[rstest]
+    #[test]
+    #[case(
+            vec![
+            vec!['.', '.', '.', '.', '.'],
+            vec!['.', 'S', '-', '7', '.'],
+            vec!['.', '|', '.', '|', '.'],
+            vec!['.', 'L', '-', 'J', '.'],
+            vec!['.', '.', '.', '.', '.']
+                ], (2,3), [(Location::WEST, PipeType::Ground),(Location::NORTH,PipeType::NorthWest),(Location::EAST,PipeType::Ground),(Location::SOUTH, PipeType::SouthWest)])]
+    #[case(
+            vec![
+            vec!['.', '.', 'F', '7', '.'],
+            vec!['.', 'F', 'J', '|', '.'],
+            vec!['S', 'J', '.', 'L', '7'],
+            vec!['|', 'F', '-', '-', 'J'],
+            vec!['L', 'J', '.', '.', '.']
+                ], (3,1), [(Location::WEST, PipeType::Vertical),(Location::NORTH,PipeType::SouthWest),(Location::EAST,PipeType::Horizontal),(Location::SOUTH, PipeType::SouthWest)])]
+
+    fn get_neighbouring_pipes_returns_the_pipes_sorrounding_the_current_pipe(
+        #[case] matrix: Vec<Vec<char>>,
+        #[case] current_tile: (u32, u32),
+        #[case] expected: [(Location, PipeType); 4],
+    ) {
+        let actual = get_neighbouring_pipes(&matrix, current_tile).unwrap();
         assert_that!(actual, eq(expected));
     }
 }
