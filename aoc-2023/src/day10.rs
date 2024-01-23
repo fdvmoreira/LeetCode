@@ -124,8 +124,33 @@ fn get_neighbouring_pipes<Location, PipeType>(
 ) -> Option<[(Location, PipeType); 4]> {
     let mut neighbours: [(Location, PipeType); 4] = todo!();
 
-    //TODO: add the Pipes to the array by checking the pipe starting in the West and ending in the
-    //South
+    let left = if current_tile.1 > 0 {
+        Some(matrix[current_tile.0 as usize][current_tile.1 as usize - 1])
+    } else {
+        None
+    };
+
+    let top = if current_tile.0 > 0 {
+        Some(matrix[current_tile.0 as usize - 1][current_tile.1 as usize])
+    } else {
+        None
+    };
+
+    let right = if (current_tile.1 as usize) < matrix[0].len() - 2 {
+        Some(matrix[current_tile.0 as usize][current_tile.1 as usize + 1])
+    } else {
+        None
+    };
+
+    let bottom = if (current_tile.0 as usize) < matrix.len() - 2 {
+        Some(matrix[current_tile.0 as usize + 1][current_tile.1 as usize])
+    } else {
+        None
+    };
+
+    // TODO: add the Pipes to the array by checking the pipe starting in the West and ending in the
+    // South
+    // Get the pipe type from enum and couple them with the direction value
     //
     Some(neighbours)
 }
