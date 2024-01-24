@@ -97,8 +97,6 @@
 // Return the half of the total pipe length
 //
 
-use std::ops::IndexMut;
-
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Location {
     NORTH,
@@ -118,11 +116,15 @@ pub enum PipeType {
     Ground,
 }
 
-fn get_neighbouring_pipes<Location, PipeType>(
+fn get_pipe(tile: char) -> Option<PipeType> {
+    todo!()
+}
+
+fn get_neighbouring_pipes<Location: std::fmt::Debug, PipeType: std::fmt::Debug>(
     matrix: &Vec<Vec<char>>,
     current_tile: (u32, u32),
 ) -> Option<[(Location, PipeType); 4]> {
-    let mut neighbours: [(Location, PipeType); 4] = todo!();
+    let mut neighbours: Vec<(Location, PipeType)> = Vec::new();
 
     let left = if current_tile.1 > 0 {
         Some(matrix[current_tile.0 as usize][current_tile.1 as usize - 1])
@@ -148,11 +150,13 @@ fn get_neighbouring_pipes<Location, PipeType>(
         None
     };
 
+    // neighbours.push(());
+
     // TODO: add the Pipes to the array by checking the pipe starting in the West and ending in the
     // South
     // Get the pipe type from enum and couple them with the direction value
     //
-    Some(neighbours)
+    Some(neighbours.try_into().unwrap())
 }
 
 fn get_next_tile(
@@ -302,6 +306,23 @@ mod tests {
         #[case] expected: [(Location, PipeType); 4],
     ) {
         let actual = get_neighbouring_pipes(&matrix, current_tile).unwrap();
+        assert_that!(actual, eq(expected));
+    }
+
+    #[rstest]
+    #[test]
+    #[case('-', PipeType::Horizontal)]
+    #[case('|', PipeType::Vertical)]
+    #[case('F', PipeType::NorthEast)]
+    #[case('7', PipeType::NorthWest)]
+    #[case('L', PipeType::SouthEast)]
+    #[case('J', PipeType::SouthWest)]
+    #[case('.', PipeType::Ground)]
+    fn get_pipe_return_the_pipe_name_given_a_char_representation_of_a_pipe(
+        #[case] input: char,
+        #[case] expected: PipeType,
+    ) {
+        let actual = get_pipe(input).unwrap();
         assert_that!(actual, eq(expected));
     }
 }
