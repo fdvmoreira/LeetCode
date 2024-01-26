@@ -117,7 +117,15 @@ pub enum PipeType {
 }
 
 fn get_pipe(tile: char) -> Option<PipeType> {
-    todo!()
+    match tile {
+        '-' => Some(PipeType::Horizontal),
+        '|' => Some(PipeType::Vertical),
+        'J' => Some(PipeType::SouthWest),
+        'L' => Some(PipeType::SouthEast),
+        '7' => Some(PipeType::NorthWest),
+        'F' => Some(PipeType::NorthEast),
+        _ => Some(PipeType::Ground),
+    }
 }
 
 fn get_neighbouring_pipes<Location: std::fmt::Debug, PipeType: std::fmt::Debug>(
