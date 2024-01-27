@@ -128,7 +128,7 @@ fn get_pipe(tile: char) -> Option<PipeType> {
     }
 }
 
-fn get_neighbouring_pipes<Location: std::fmt::Debug, PipeType: std::fmt::Debug>(
+fn get_neighbouring_pipes<Location, PipeType>(
     matrix: &Vec<Vec<char>>,
     current_tile: (u32, u32),
 ) -> Option<[(Location, PipeType); 4]> {
@@ -160,6 +160,10 @@ fn get_neighbouring_pipes<Location: std::fmt::Debug, PipeType: std::fmt::Debug>(
 
     // neighbours.push(());
 
+    neighbours.push((Location::WEST, get_pipe(left.unwrap()).unwrap()));
+    neighbours.push((Location::NORTH, get_pipe(top.unwrap()).unwrap()));
+    neighbours.push((Location::EAST, get_pipe(right.unwrap()).unwrap()));
+    neighbours.push((Location::SOUTH, get_pipe(bottom.unwrap()).unwrap()));
     // TODO: add the Pipes to the array by checking the pipe starting in the West and ending in the
     // South
     // Get the pipe type from enum and couple them with the direction value
@@ -175,6 +179,7 @@ fn get_next_tile(
     todo!()
     // find the pipes connected to current pipe
     // exclude the previous one and the next one should be the one left
+    // let n_pipes = get_neighbouring_pipes(matrix, current_tile).unwrap();
 }
 
 fn get_start_index(grid: &Vec<Vec<char>>) -> Option<(u32, u32)> {
