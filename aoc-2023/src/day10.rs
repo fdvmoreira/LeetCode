@@ -137,25 +137,25 @@ fn get_neighbouring_pipes(
     let left = if current_tile.1 > 0 {
         Some(matrix[current_tile.0 as usize][current_tile.1 as usize - 1])
     } else {
-        None
+        Some('.')
     };
 
     let top = if current_tile.0 > 0 {
         Some(matrix[current_tile.0 as usize - 1][current_tile.1 as usize])
     } else {
-        None
+        Some('.')
     };
 
-    let right = if (current_tile.1 as usize) < matrix[0].len() - 2 {
+    let right = if (current_tile.1 as usize) <= matrix[0].len() - 2 {
         Some(matrix[current_tile.0 as usize][current_tile.1 as usize + 1])
     } else {
-        None
+        Some('.')
     };
 
-    let bottom = if (current_tile.0 as usize) < matrix.len() - 2 {
+    let bottom = if (current_tile.0 as usize) <= matrix.len() - 2 {
         Some(matrix[current_tile.0 as usize + 1][current_tile.1 as usize])
     } else {
-        None
+        Some('.')
     };
 
     // neighbours.push(());
@@ -164,10 +164,7 @@ fn get_neighbouring_pipes(
     neighbours.push((Location::NORTH, get_pipe(top.unwrap()).unwrap()));
     neighbours.push((Location::EAST, get_pipe(right.unwrap()).unwrap()));
     neighbours.push((Location::SOUTH, get_pipe(bottom.unwrap()).unwrap()));
-    // TODO: add the Pipes to the array by checking the pipe starting in the West and ending in the
-    // South
-    // Get the pipe type from enum and couple them with the direction value
-    //
+
     Some(neighbours.try_into().unwrap())
 }
 
