@@ -128,7 +128,7 @@ fn get_pipe(tile: char) -> Option<PipeType> {
     }
 }
 
-fn get_neighbouring_pipes<Location, PipeType>(
+fn get_neighbouring_pipes(
     matrix: &Vec<Vec<char>>,
     current_tile: (u32, u32),
 ) -> Option<[(Location, PipeType); 4]> {
