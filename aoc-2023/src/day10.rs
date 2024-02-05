@@ -97,6 +97,8 @@
 // Return the half of the total pipe length
 //
 
+use std::usize;
+
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Location {
     NORTH,
@@ -173,10 +175,24 @@ fn get_next_tile(
     prev_tile: (u32, u32),
     current_tile: (u32, u32),
 ) -> Option<(u32, u32)> {
+    let n_pipes = get_neighbouring_pipes(matrix, current_tile).unwrap();
+
+    let mut connected_pipes = n_pipes.into_iter().filter(|pipe| {
+        is_pipe_connected(pipe)
+            && pipe.1 != get_pipe(matrix[prev_tile.0 as usize][prev_tile.1 as usize]).unwrap()
+    });
+    let next = connected_pipes.next().unwrap();
+
+    match next.0 {
+        Location::WEST => Some((current_tile.0, current_tile.1 - 1)),
+        Location::NORTH => Some((current_tile.0 - 1, current_tile.1)),
+        Location::EAST => Some((current_tile.0, current_tile.1 + 1)),
+        Location::SOUTH => Some((current_tile.0 + 1, current_tile.1)),
+    }
+}
+
+fn is_pipe_connected(pipe: &(Location, PipeType)) -> bool {
     todo!()
-    // find the pipes connected to current pipe
-    // exclude the previous one and the next one should be the one left
-    // let n_pipes = get_neighbouring_pipes(matrix, current_tile).unwrap();
 }
 
 fn get_start_index(grid: &Vec<Vec<char>>) -> Option<(u32, u32)> {
