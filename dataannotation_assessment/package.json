@@ -1,0 +1,16 @@
+{
+  "name": "dataannotation_assessment",
+  "version": "1.0.0",
+  "description": "Assessment exercise",
+  "main": "decode.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "NODE_END=development node decode.js",
+    "test": "NODE_ENV=test node --test --watch --experimental-test-coverage",
+    "test:watch": "NODE_ENV=test node --test --watch --experimental-test-coverage"
+  },
+  "author": "Flavio Moreira",
+  "license": "MIT"
+}
