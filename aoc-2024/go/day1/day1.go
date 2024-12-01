@@ -44,3 +44,46 @@ func TotalDistance(data []string) int {
 
 	return sum
 }
+
+func SimilarityScore(data []string) int {
+
+	leftList, similarities := func(input []string) ([]int, map[int]int) {
+
+		appearanceCounter := map[int]int{}
+		var list = make([]int, len(input))
+
+		for idx, v := range input {
+			row := strings.Fields(v)
+			key, err := strconv.Atoi(row[0])
+
+			if err != nil {
+				panic(err)
+			}
+
+			appearanceCounter[(key)] = 0
+			list[idx] = key
+		}
+
+		for _, v := range input {
+			row := strings.Fields(v)
+			value, err := strconv.Atoi(row[1])
+
+			if err != nil {
+				panic(err)
+			}
+
+			if _, ok := appearanceCounter[value]; ok {
+				appearanceCounter[value] = appearanceCounter[value] + 1
+			}
+		}
+
+		return list, appearanceCounter
+	}(data)
+
+	score := 0
+	for _, v := range leftList {
+		score += v * similarities[v]
+	}
+
+	return score
+}

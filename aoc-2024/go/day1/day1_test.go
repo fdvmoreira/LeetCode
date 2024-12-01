@@ -18,3 +18,14 @@ func TestTotalDistance(t *testing.T) {
 		assert.Equal(t, expected, actual)
 	}
 }
+
+func TestSimilarityScore(t *testing.T) {
+	data, err := utils.ReadFile("./test_data.txt")
+	if assert.NoError(t, err) {
+
+		actual := SimilarityScore(data)
+		const expected = 31
+
+		assert.Equal(t, expected, actual)
+	}
+}

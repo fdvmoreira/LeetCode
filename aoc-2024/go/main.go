@@ -12,5 +12,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("Answer: %v\n", day1.TotalDistance(data))
+	// fmt.Printf("Answer: %v\n", day1.TotalDistance(data))
+	fmt.Printf("Answer: %v\n", day1.SimilarityScore(data))
+
 }
