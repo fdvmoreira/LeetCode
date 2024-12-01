@@ -193,6 +193,7 @@ fn get_next_tile(
 
 fn is_pipe_connected(pipe: &(Location, PipeType)) -> bool {
     todo!()
+    // Add tests
 }
 
 fn get_start_index(grid: &Vec<Vec<char>>) -> Option<(u32, u32)> {
