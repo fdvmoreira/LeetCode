@@ -14,7 +14,7 @@ func TestCountSafeLevels(t *testing.T) {
 		assert.Fail(t, err.Error())
 	}
 
-	const expected = 2
+	const expected = 3
 	actual, err := CountSafeLevels(data)
 	if assert.NoError(t, err) {
 		assert.Equal(t, expected, actual)
