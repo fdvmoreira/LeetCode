@@ -21,7 +21,8 @@ func SumOfMultiplication(text []string) (int, error) {
 		var s scanner.Scanner
 		s.Init(strings.NewReader(line))
 		s.Filename = "testfile"
-		s.Whitespace ^= 1 << ' '
+		s.Mode ^= scanner.ScanChars | scanner.ScanComments // Set mode to scan single quotes and skip comments
+		s.Whitespace ^= 1<<'\t' | 1<<'\r' | 1<<'\n' | 1<<' '
 
 		var (
 			tokens = make([]string, 0)
