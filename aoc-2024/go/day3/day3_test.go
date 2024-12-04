@@ -29,3 +29,18 @@ func TestSumOfMultiplication(t *testing.T) {
 
 	assert.Equal(t, expected, actual)
 }
+
+func TestSumOfMultiplicationV2(t *testing.T) {
+	text, err := utils.ReadFile("./test_data2.txt")
+	if err != nil {
+		t.Errorf("Error while reading file: %v", err)
+	}
+
+	expected := 48
+	actual, err := SumOfMultiplicationV2(text)
+	if err != nil {
+		t.Errorf("Error while calculating sum of multiplication: %v", err)
+	}
+
+	assert.Equal(t, expected, actual)
+}

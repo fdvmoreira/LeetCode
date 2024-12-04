@@ -86,3 +86,75 @@ func ValidExpression(openPar, op1, cmm, op2, closePar string) bool {
 
 	return true
 }
+
+// enable do() and disable with don't()
+func SumOfMultiplicationV2(text []string) (int, error) {
+	sum := 0
+	muls := list.New()
+
+	if len(text) == 0 {
+		return sum, errors.New("Empty Data!")
+	}
+
+	for _, line := range text {
+
+		var s scanner.Scanner
+		s.Init(strings.NewReader(line))
+		s.Filename = "testfile"
+		s.Mode ^= scanner.ScanChars | scanner.ScanComments // Set mode to scan single quotes and skip comments
+		s.Whitespace ^= 1<<'\t' | 1<<'\r' | 1<<'\n' | 1<<' '
+
+		var (
+			tokens = make([]string, 0)
+		)
+
+		// assign the token to the array
+		for tok := s.Scan(); tok != scanner.EOF; tok = s.Scan() {
+			tokens = append(tokens, s.TokenText())
+		}
+
+		insEnabled := true
+
+		for idx, tok := range tokens {
+
+			if strings.HasSuffix(tok, "do") && idx+2 < len(tokens) {
+				if strings.Compare(strings.Join(tokens[idx+1:idx+3], ""), "()") == 0 {
+					insEnabled = true
+				}
+			}
+
+			if strings.HasSuffix(tok, "don") && idx+4 < len(tokens) {
+				if strings.Compare(strings.Join(tokens[idx+1:idx+5], ""), "'t()") == 0 {
+					insEnabled = false
+				}
+			}
+
+			if strings.HasSuffix(tok, "mul") && insEnabled && (idx+5) < len(tokens) {
+				openPar := tokens[idx+1]
+				op1 := tokens[idx+2]
+				cmm := tokens[idx+3]
+				op2 := tokens[idx+4]
+				closePar := tokens[idx+5]
+
+				if ValidExpression(openPar, op1, cmm, op2, closePar) {
+					v1, err1 := strconv.Atoi(op1)
+					v2, err2 := strconv.Atoi(op2)
+					if err1 == nil && err2 == nil {
+						muls.PushBack(v1 * v2)
+					}
+				}
+			}
+		}
+	}
+
+	// sum the multiplications
+	for val := muls.Front(); val != nil; val = val.Next() {
+		if v, ok := val.Value.(int); ok {
+			sum += v
+			continue
+		}
+		return sum, errors.New("Could not convert value to int")
+	}
+
+	return sum, nil
+}

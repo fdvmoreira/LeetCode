@@ -12,7 +12,7 @@ func main() {
 		panic(err)
 	}
 
-	res, err := day3.SumOfMultiplication(data)
+	res, err := day3.SumOfMultiplicationV2(data)
 	if err != nil {
 		_ = fmt.Errorf(err.Error())
 	}
