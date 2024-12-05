@@ -22,3 +22,17 @@ func TestXMasWordSearch(t *testing.T) {
 	}
 	assert.Equal(t, expected, actual)
 }
+
+func TestXMasWordSearchV2(t *testing.T) {
+	data, err := utils.ReadFile("./test_data2.txt")
+	if err != nil {
+		fmt.Printf("error: %v\n", err.Error())
+	}
+
+	const expected int = 4
+	actual, err := XMasWordSearch(data)
+	if err != nil {
+		fmt.Printf("error: %v\n", err.Error())
+	}
+	assert.Equal(t, expected, actual)
+}

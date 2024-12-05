@@ -1,20 +1,20 @@
 package main
 
 import (
-	"aoc/day3"
+	"aoc/day4"
 	. "aoc/utils"
 	"fmt"
 )
 
 func main() {
-	data, err := ReadFile("./data/day3.txt")
+	data, err := ReadFile("./data/day4.txt")
 	if err != nil {
 		panic(err)
 	}
 
-	res, err := day3.SumOfMultiplicationV2(data)
+	res, err := day4.XMasWordSearch(data)
 	if err != nil {
-		_ = fmt.Errorf(err.Error())
+		fmt.Printf("Error: %v", err.Error())
 	}
 	fmt.Printf("Answer: %v\n", res)
 
