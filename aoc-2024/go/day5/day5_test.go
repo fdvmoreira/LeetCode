@@ -23,20 +23,45 @@ func TestSumMiddlePages(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestIsPagesOrdered(t *testing.T) { // TODO: Add Fuzz testing or change to table/data drive test
-	var (
-		p1Expected = []int{75, 47, 61, 53, 29}
-		p2Expected = []int{97, 61, 53, 29, 13}
-		p3Expected = []int{75, 29, 13}
-		p4Expected = []int{75, 97, 47, 61, 53}
-		p5Expected = []int{61, 13, 29}
-		p6Expected = []int{97, 13, 75, 29, 47}
-	)
+type TableTest struct {
+	input    []int
+	expected bool
+}
 
-	assert.True(t, IsPageOrdered(p1Expected))
-	assert.True(t, IsPageOrdered(p2Expected))
-	assert.True(t, IsPageOrdered(p3Expected))
-	assert.False(t, IsPageOrdered(p4Expected))
-	assert.False(t, IsPageOrdered(p5Expected))
-	assert.False(t, IsPageOrdered(p6Expected))
+func TestIsPagesOrdered(t *testing.T) { // TODO: Add Fuzz testing or change to table/data drive test
+	rules := map[string]bool{
+		"47|53": false,
+		"97|13": false,
+		"97|61": false,
+		"97|47": false,
+		"75|29": false,
+		"61|13": false,
+		"75|53": false,
+		"29|13": false,
+		"97|29": false,
+		"53|29": false,
+		"61|53": false,
+		"97|53": false,
+		"61|29": false,
+		"47|13": false,
+		"75|47": false,
+		"97|75": false,
+		"47|61": false,
+		"75|61": false,
+		"47|29": false,
+		"75|13": false,
+		"53|13": false,
+	}
+
+	testData := []TableTest{{[]int{75, 47, 61, 53, 29}, true},
+		{[]int{97, 61, 53, 29, 13}, true},
+		{[]int{75, 29, 13}, true},
+		{[]int{75, 97, 47, 61, 53}, false},
+		{[]int{61, 13, 29}, false},
+		{[]int{97, 13, 75, 29, 47}, false}}
+
+	for _, test := range testData {
+		actual := IsPageOrdered(test.input, &rules)
+		assert.Equal(t, actual, test.expected)
+	}
 }

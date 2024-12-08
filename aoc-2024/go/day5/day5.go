@@ -17,7 +17,7 @@ func SumMiddlePages(data []string) (int, error) {
 	}
 
 	var (
-		rules   []string
+		rules   = make(map[string]bool)
 		updates [][]int
 	)
 
@@ -30,6 +30,10 @@ func SumMiddlePages(data []string) (int, error) {
 	}
 
 	// split the data into rules and updates
+	for i := 0; i <= sectionPlitIndex-1; i++ {
+		rules[strings.TrimSpace(data[i])] = false
+	}
+
 	for _, line := range data[sectionPlitIndex+1:] {
 
 		// transform the string into array of numbers
@@ -51,7 +55,7 @@ func SumMiddlePages(data []string) (int, error) {
 	}
 
 	for _, update := range updates {
-		if IsPageOrdered(update) {
+		if IsPageOrdered(update, &rules) {
 			middleIndex := int(math.Floor(float64(len(update) / 2)))
 			sum += update[middleIndex]
 		}
@@ -60,9 +64,20 @@ func SumMiddlePages(data []string) (int, error) {
 	return sum, nil
 }
 
-func IsPageOrdered(pages []int) bool {
+func IsPageOrdered(pages []int, m *map[string]bool) bool {
 	if len(pages) == 0 {
 		return false
+	}
+
+	for i, page := range pages {
+		for j := i + 1; j < len(pages); j++ {
+
+			key := fmt.Sprintf("%v|%v", pages[j], page)
+			_, ok := (*m)[key]
+			if ok {
+				return false
+			}
+		}
 	}
 
 	return true
