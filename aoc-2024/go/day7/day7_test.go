@@ -29,7 +29,7 @@ func TestCalculateEquation(t *testing.T) {
 		assert.Nil(t, err, "Error was not expected")
 
 		const expected = 3749
-		assert.Equal(t, actual, expected)
+		assert.Equal(t, expected, actual)
 	})
 
 }
@@ -50,7 +50,7 @@ func TestEvaluateEquation(t *testing.T) {
 	for _, v := range data {
 		t.Run(fmt.Sprintf("Given%vAnd%vItShouldReturn%v", v.equationVal, v.target, v.expected), func(t *testing.T) {
 			actual := EvaluateEquation(&v.equationVal, v.target)
-			assert.Equal(t, actual, v.expected)
+			assert.Equal(t, v.expected, actual)
 		})
 	}
 }
