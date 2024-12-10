@@ -49,7 +49,7 @@ func TestEvaluateEquation(t *testing.T) {
 
 	for _, v := range data {
 		t.Run(fmt.Sprintf("Given%vAnd%vItShouldReturn%v", v.equationVal, v.target, v.expected), func(t *testing.T) {
-			actual := EvaluateEquation(&v.equationVal, v.target)
+			actual := EvaluateEquation(&v.equationVal, float64(v.target))
 			assert.Equal(t, v.expected, actual)
 		})
 	}
