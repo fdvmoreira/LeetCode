@@ -1,18 +1,18 @@
 package main
 
 import (
-	"aoc/day7"
+	"aoc/day8"
 	. "aoc/utils"
 	"fmt"
 )
 
 func main() {
-	data, err := ReadFile("./data/day7.txt")
+	data, err := ReadFile("./data/day8.txt")
 	if err != nil {
 		panic(err)
 	}
 
-	res, err := day7.CalculateCalibration(data)
+	res, err := day8.CountAntinode(&data)
 	if err != nil {
 		fmt.Printf("Error: %v", err.Error())
 	}
