@@ -12,7 +12,7 @@ func main() {
 		panic(err)
 	}
 
-	res, err := day10.SumTrailheadsScore(&data)
+	res, err := day10.SumTrailheadsUniquePathScore(&data)
 	if err != nil {
 		fmt.Printf("Error: %v", err.Error())
 	}

@@ -24,3 +24,19 @@ func TestSumTrailheadsScore(t *testing.T) {
 		assert.Equal(t, expected, actual)
 	})
 }
+func TestSumTrailheadsUniquePathsScore(t *testing.T) {
+	data, err := utils.ReadFile("./test_data.txt")
+	assert.Nil(t, err)
+
+	t.Run("ShouldFaildWhenNoData", func(t *testing.T) {
+		_, err := SumTrailheadsUniquePathScore(&[]string{})
+		assert.NotNil(t, err)
+	})
+
+	t.Run("GivenDataItShouldReturnExpectedValue", func(t *testing.T) {
+		actual, err := SumTrailheadsUniquePathScore(&data)
+		assert.Nil(t, err)
+		expected := 81
+		assert.Equal(t, expected, actual)
+	})
+}
