@@ -1,9 +1,8 @@
 package day10
 
 import (
+	"container/list"
 	"errors"
-	"fmt"
-	// "fmt"
 )
 
 func SumTrailheadsScore(topographicMap *[]string) (int, error) {
@@ -28,23 +27,70 @@ func SumTrailheadsScore(topographicMap *[]string) (int, error) {
 	}
 
 	// - find hiking trails
-	func(theads *map[Location]int) {
+	func(theads *map[Location]int, tmap *[]string) {
 		//
-		for k, _ := range *theads {
-			//
-			fmt.Println(k) // TODO: Remove me
-			fmt.Printf("Row: %d, col: %d\n", k.y, k.x)
+		for key := range *theads {
+			stack := list.New()
+			stack.PushBack(key) // Starting Position
+			paths := make(map[Location]bool)
 
+			for stack.Len() != 0 {
+				// check if the current top of stack is the target we looking for
+				el := stack.Back()
+				stack.Remove(el)
+				pos := el.Value.(Location)
+				row, col := pos.y, pos.x
+				currVal := (*tmap)[row][col]
+
+				if currVal == '9' {
+					paths[Location{col, row}] = true //memoize found value locations
+					stack.Remove(el)
+					continue
+				}
+
+				// If there are still elemet after previous removal
+
+				// look around
+				// left
+				if col > 0 {
+					lVal := (*tmap)[row][col-1]
+					if lVal == (currVal + 1) {
+						stack.PushBack(Location{col - 1, row})
+					}
+				}
+				// up
+				if row > 0 {
+					tVal := (*tmap)[row-1][col]
+					if tVal == (currVal + 1) {
+						stack.PushBack(Location{col, row - 1})
+					}
+				}
+				// right
+				if col < len((*tmap)[0])-1 {
+					rVal := (*tmap)[row][col+1]
+					if rVal == (currVal + 1) {
+						stack.PushBack(Location{col + 1, row})
+					}
+				}
+				// down
+				if row < len((*tmap))-1 {
+					bVal := (*tmap)[row+1][col]
+					if bVal == (currVal + 1) {
+						stack.PushBack(Location{col, row + 1})
+					}
+				}
+			}
+
+			(*theads)[key] = len(paths)
 		}
 
-	}(&trailheads)
+	}(&trailheads, topographicMap)
 
 	// - score trailhead
-	//
 
 	for _, score := range trailheads {
 		scoresSum += score
 	}
 
-	return scoresSum, nil //TODO: replace the with the return variable
+	return scoresSum, nil
 }
