@@ -1,18 +1,18 @@
 package main
 
 import (
-	"aoc/day10"
+	"aoc/day11"
 	. "aoc/utils"
 	"fmt"
 )
 
 func main() {
-	data, err := ReadFile("./data/day10.txt")
+	data, err := ReadFile("./data/day11.txt")
 	if err != nil {
 		panic(err)
 	}
 
-	res, err := day10.SumTrailheadsUniquePathScore(&data)
+	res, err := day11.CountStones(data[0], 75)
 	if err != nil {
 		fmt.Printf("Error: %v", err.Error())
 	}
