@@ -13,5 +13,11 @@ func CalculateFencePrice(garden *[]string) (int, error) {
 		return totalFencePrice, errors.New("No Data")
 	}
 
+	// TODO:
+	// Find start of each group
+	// Find the height and width of each group
+	// NOTE: Mark the visited location to prevent double
+	// count the marked location (as these should ne unique for each group)
+
 	return totalFencePrice, nil
 }
