@@ -106,10 +106,9 @@ func SumSmallestTokenAmount(puzzle *[]string) (int, error) {
 		}
 	}
 
-	for _i, clawMachine := range clowMachines {
-		memo := make(map[Prize]int)
-		tokens := SmallestTokenAmount(clawMachine, &memo)
-		println("Machine:", _i, "Smallest amount of coin:", tokens)
+	for _, clawMachine := range clowMachines {
+		// memo := make(map[Prize]int)
+		tokens := SmallestTokenAmountV2(clawMachine)
 
 		tokensCount += tokens
 	}
@@ -117,6 +116,30 @@ func SumSmallestTokenAmount(puzzle *[]string) (int, error) {
 	return tokensCount, nil
 }
 
+func SmallestTokenAmountV2(clawMachine ClawMachine) int {
+	minCost := math.MaxInt
+
+	for i := 0; i < 100; i++ {
+		bAX := i * clawMachine.buttonA.x
+		bAY := i * clawMachine.buttonA.y
+		for j := 0; j < 100; j++ {
+			bBX := j * clawMachine.buttonB.x
+			bBY := j * clawMachine.buttonB.y
+
+			if bAX+bBX == clawMachine.prize.x && bAY+bBY == clawMachine.prize.y {
+				minCost = min(((i)*3 + (j)*1), minCost)
+			}
+		}
+	}
+
+	if minCost == math.MaxInt {
+		return 0
+	}
+
+	return minCost
+}
+
+// DEPRECATED
 func SmallestTokenAmount(clawMachine ClawMachine, memo *map[Prize]int) int {
 
 	if _, ok := (*memo)[clawMachine.prize]; ok {

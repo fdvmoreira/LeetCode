@@ -1,18 +1,18 @@
 package main
 
 import (
-	"aoc/day11"
+	"aoc/day13"
 	. "aoc/utils"
 	"fmt"
 )
 
 func main() {
-	data, err := ReadFile("./data/day11.txt")
+	data, err := ReadFile("./data/day13.txt")
 	if err != nil {
 		panic(err)
 	}
 
-	res, err := day11.CountStones(data[0], 75)
+	res, err := day13.SumSmallestTokenAmount(&data)
 	if err != nil {
 		fmt.Printf("Error: %v", err.Error())
 	}
