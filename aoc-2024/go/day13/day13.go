@@ -77,7 +77,7 @@ func SumSmallestTokenAmount(puzzle *[]string) (int, error) {
 					id:   'A',
 					x:    x,
 					y:    y,
-					cost: 3,
+					cost: 0,
 				}
 
 				clowMachines[selectedClawMachine] = cm
@@ -89,7 +89,7 @@ func SumSmallestTokenAmount(puzzle *[]string) (int, error) {
 					id:   'B',
 					x:    x,
 					y:    y,
-					cost: 1,
+					cost: 0,
 				}
 
 				clowMachines[selectedClawMachine] = cm
@@ -106,8 +106,10 @@ func SumSmallestTokenAmount(puzzle *[]string) (int, error) {
 		}
 	}
 
-	for _, clawMachine := range clowMachines {
-		tokens := SmallestTokenAmount(clawMachine)
+	for _i, clawMachine := range clowMachines {
+		memo := make(map[Prize]int)
+		tokens := SmallestTokenAmount(clawMachine, &memo)
+		println("Machine:", _i, "Smallest amount of coin:", tokens)
 
 		tokensCount += tokens
 	}
@@ -115,11 +117,42 @@ func SumSmallestTokenAmount(puzzle *[]string) (int, error) {
 	return tokensCount, nil
 }
 
-func SmallestTokenAmount(clawMachine ClawMachine) int {
+func SmallestTokenAmount(clawMachine ClawMachine, memo *map[Prize]int) int {
+
+	if _, ok := (*memo)[clawMachine.prize]; ok {
+		return (*memo)[clawMachine.prize]
+	}
 
 	if clawMachine.prize.x == 0 && clawMachine.prize.y == 0 {
 		return 0 // TODO: found
 	}
 
-	return 0
+	if clawMachine.prize.x < 0 || clawMachine.prize.y < 0 {
+		return math.MaxInt
+	}
+	//A
+	cma := clawMachine
+	cma.prize.x -= cma.buttonA.x
+	cma.prize.y -= cma.buttonA.y
+	cma.buttonA.cost += 3
+	costa := SmallestTokenAmount(cma, memo)
+	if costa == 0 {
+		costa += cma.buttonA.cost
+	}
+
+	//B
+	cmb := clawMachine
+	cmb.prize.x -= cmb.buttonB.x
+	cmb.prize.y -= cmb.buttonB.y
+	cmb.buttonB.cost += 2
+	costb := SmallestTokenAmount(cmb, memo)
+	if costb == 0 {
+		costb += cmb.buttonB.cost
+	}
+
+	smallest := min(costa, costb)
+
+	(*memo)[clawMachine.prize] = smallest
+
+	return smallest
 }
