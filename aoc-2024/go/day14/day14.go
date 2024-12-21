@@ -1,6 +1,7 @@
 package day14
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"slices"
@@ -69,6 +70,9 @@ func SafetyFactor(data *[]string) (int, error) {
 			robots[j].position.x = (p.x + (v.x)%tileWidth + tileWidth) % tileWidth
 			robots[j].position.y = (p.y + (v.y)%tileHeight + tileHeight) % tileHeight
 		}
+
+		println("Second:", i)
+		PrintTree(robots)
 	}
 
 	var quadrants = []int{0, 0, 0, 0}
@@ -103,4 +107,31 @@ func SafetyFactor(data *[]string) (int, error) {
 	}(quadrants)
 
 	return factor, nil
+}
+
+// Print robots to see where they resemble a tree
+func PrintTree(robots []Robot) {
+	var mapa [][]byte
+
+	for idx := 0; idx < 103; idx++ {
+		row := bytes.Repeat([]byte{' '}, 101)
+		mapa = append(mapa, row)
+	}
+
+	for _, robot := range robots {
+		row := mapa[robot.position.y]
+		if row[robot.position.x] != ' ' {
+			// row[robot.position.x] = row[robot.position.x] + 1
+			row[robot.position.x] = '#'
+		} else {
+
+			row[robot.position.x] = '.'
+		}
+		mapa[robot.position.y] = row
+	}
+
+	for _, line := range mapa {
+		println(string(line))
+	}
+
 }
