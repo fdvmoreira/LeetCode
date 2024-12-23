@@ -2,7 +2,6 @@ package day15
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -68,41 +67,94 @@ func SumBoxesGPSCoordinates(input *[]string) (int, error) {
 		}
 	}
 
+	for rIdx, row := range warehouse {
+		for cIdx, x := range row {
+			if x == 'O' {
+				sumBoxesGPSCoords += 100*rIdx + cIdx
+			}
+		}
+	}
+
 	return sumBoxesGPSCoords, nil
 }
 
 func move(r *Robot, dir Direction, w *[][]byte) (bool, error) {
-	moved := false
 	if r.position.x == 0 || r.position.y == 0 {
 		return false, errors.New("Robot Not Found")
 	}
 
-	// TODO: Find the empty slot
-	// Move the robot and every box to the found slot
-	canMove, lastObjToMove := func(r *Robot, dir Direction, w *[][]byte) (bool, Coord) {
-		currPos := r.position
-		for {
-			if (*w)[currPos.y][currPos.x] == ' ' {
-				return true, currPos
-			}
+	currPos := (*r).position
+	canMove := true
+
+	for (*w)[currPos.y][currPos.x] != '.' {
+		if dir == Up {
+			currPos.y -= 1
 		}
-		return false, Coord{}
-	}(r, dir, w)
 
-	switch dir {
-	case Up:
+		if dir == Right {
+			currPos.x += 1
+		}
 
-	case Right:
+		if dir == Down {
+			currPos.y += 1
+		}
 
-	case Down:
+		if dir == Left {
+			currPos.x -= 1
+		}
 
-	case Left:
-
-	default:
-		return false, fmt.Errorf("Unknown Movement: %v", string(dir))
+		if (*w)[currPos.y][currPos.x] == '#' {
+			canMove = false
+			currPos = (*r).position
+			break
+		}
 	}
 
-	return moved, nil
-}
+	if canMove {
+		initialRobotPos := (*r).position
 
-func canMove(r *Robot, dir Direction)
+		// shift the object in the direction of the found empty slot
+		currentObj := &(*w)[currPos.y][currPos.x]
+
+		if dir == Up {
+
+			newRobotPos := &(*w)[initialRobotPos.y-1][initialRobotPos.x]
+			*currentObj = *newRobotPos
+			*newRobotPos = (*w)[initialRobotPos.y][initialRobotPos.x]
+			(*w)[initialRobotPos.y][initialRobotPos.x] = '.'
+			(*r).position.y -= 1
+
+		}
+
+		if dir == Right {
+
+			newRobotPos := &(*w)[initialRobotPos.y][initialRobotPos.x+1]
+			*currentObj = *newRobotPos
+			*newRobotPos = (*w)[initialRobotPos.y][initialRobotPos.x]
+			(*w)[initialRobotPos.y][initialRobotPos.x] = '.'
+			(*r).position.x += 1
+		}
+
+		if dir == Down {
+
+			newRobotPos := &(*w)[initialRobotPos.y+1][initialRobotPos.x]
+			*currentObj = *newRobotPos
+			*newRobotPos = (*w)[initialRobotPos.y][initialRobotPos.x]
+			(*w)[initialRobotPos.y][initialRobotPos.x] = '.'
+			(*r).position.y += 1
+
+		}
+
+		if dir == Left {
+
+			newRobotPos := &(*w)[initialRobotPos.y][initialRobotPos.x-1]
+			*currentObj = *newRobotPos
+			*newRobotPos = (*w)[initialRobotPos.y][initialRobotPos.x]
+			(*w)[initialRobotPos.y][initialRobotPos.x] = '.'
+			(*r).position.x -= 1
+
+		}
+	}
+
+	return canMove, nil
+}

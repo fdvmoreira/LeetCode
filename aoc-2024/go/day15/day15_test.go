@@ -10,6 +10,7 @@ import (
 
 func TestSumBoxesGPSCoords(t *testing.T) {
 	data, err := utils.ReadFile("./test_data.txt")
+	// data, err := utils.ReadFile("./test_data_ii.txt")
 	assert.Nil(t, err)
 
 	t.Run("GivenNoDataItShouldError", func(t *testing.T) {
